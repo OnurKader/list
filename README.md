@@ -3,9 +3,9 @@
 ___
 
 ###### Requierements
-1- gcc --version >= 8.0
-2- C++17
-3- Linux or MacOS
+1. gcc --version >= 8.0
+2. C++17
+3. Linux or MacOS
 
 ___
 
