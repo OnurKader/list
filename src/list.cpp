@@ -52,6 +52,8 @@ struct File
 	bool isDir;
 	uint64_t size;
 
+	// Add Icon Functionality, .cpp files \ue61d and stuff, vscode git python java js ...
+
 	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file.substr(index)), icon("\uf15b "), isDir(dir), size(size) {}
 
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
@@ -103,7 +105,7 @@ int main(int argc, char **argv)
 	const unsigned short term_width = getWidth();
 
 	unsigned int max_dir_length = 0u;
-	std::string directory = ".";
+	std::string directory(".");
 	for (auto &item : arg_parser.getOpts())
 		if (item.second.mode == Option::str && item.second.name != argv[0u])
 		{
