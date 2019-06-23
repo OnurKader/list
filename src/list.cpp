@@ -1,8 +1,7 @@
 #include <iostream>
+#include "args.hpp"
 #include <iomanip>
-#include <string>
 #include <algorithm>
-#include <vector>
 #include <sys/ioctl.h>
 #include <filesystem>
 
@@ -58,7 +57,7 @@ struct File
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
 	{
 		if (file.isDir)
-			os << Color(28, 158, 255) << "\ue5fe " << file.name << "/" << RESET;
+			os << Color(21, 162, 252) << "\ue5fe " << file.name << '/' << RESET;
 		else
 			os << GREEN << file.icon << file.name << ' ' << RESET;
 		return os;
@@ -68,9 +67,9 @@ struct File
 	{
 		std::string temp = "";
 		if (this->isDir)
-			temp += Color(23, 161, 252).str() + "\ue5fe " + this->name + "/" + RESET;
+			temp += Color(21, 162, 252).str() + "\ue5fe " + this->name + '/' + RESET;
 		else
-			temp += GREEN + this->icon + this->name + " " + RESET;
+			temp += GREEN + this->icon + this->name + ' ' + RESET;
 		return temp;
 	}
 
@@ -95,15 +94,21 @@ inline unsigned short getWidth()
 
 int main(int argc, char **argv)
 {
+	Args arg_parser(argc, argv);
+	arg_parser.convert();
 	std::vector<File> dir;
 	dir.reserve(64u);
 
 	const unsigned int term_width = getWidth();
 
 	unsigned int max_dir_length = 0u;
+	std::string directory;
+	for (auto &item : arg_parser.getOpts())
+		if (item.second.mode == Option::str && item.second.name != argv[0])
+			directory = item.second.name;
 
 	// FIXME Make it so that the options(Arguments) can come before the directory name, instead of argv[1], arg_get(dir_name) or smth...
-	for (const auto &entry : std::filesystem::directory_iterator(argc > 1 ? argv[1] : "."))
+	for (const auto &entry : std::filesystem::directory_iterator(argc > 1 ? directory : "."))
 	{
 		const std::string path = entry.path();
 		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
