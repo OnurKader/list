@@ -102,13 +102,13 @@ int main(int argc, char **argv)
 	const unsigned int term_width = getWidth();
 
 	unsigned int max_dir_length = 0u;
-	std::string directory;
+	std::string directory = ".";
 	for (auto &item : arg_parser.getOpts())
 		if (item.second.mode == Option::str && item.second.name != argv[0])
 			directory = item.second.name;
 
 	// FIXME Make it so that the options(Arguments) can come before the directory name, instead of argv[1], arg_get(dir_name) or smth...
-	for (const auto &entry : std::filesystem::directory_iterator(argc > 1 ? directory : "."))
+	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string path = entry.path();
 		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
