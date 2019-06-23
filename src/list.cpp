@@ -115,7 +115,8 @@ int main(int argc, char **argv)
 	{
 		const std::string path = entry.path();
 		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
-		if (show_all)
+
+		if (show_all) // -a
 			dir.push_back(file);
 		else
 		{
@@ -144,10 +145,8 @@ int main(int argc, char **argv)
 		{
 			std::cout << "    ";
 			for (size_t n = 0u; n < cols; n++)
-			{
 				if (i + n != dir.size())
 					std::cout << dir[i + n].str() << std::left << std::setw(max_dir_length - dir[i + n].length() + 4u) << " ";
-			}
 			std::cout << std::endl;
 		}
 		std::cout << "    ";
