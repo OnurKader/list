@@ -107,7 +107,6 @@ int main(int argc, char **argv)
 		if (item.second.mode == Option::str && item.second.name != argv[0])
 			directory = item.second.name;
 
-	// FIXME Make it so that the options(Arguments) can come before the directory name, instead of argv[1], arg_get(dir_name) or smth...
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string path = entry.path();
