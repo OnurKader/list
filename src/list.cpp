@@ -98,20 +98,32 @@ int main(int argc, char **argv)
 	arg_parser.convert();
 	std::vector<File> dir;
 	dir.reserve(64u);
+	bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
 
-	const unsigned int term_width = getWidth();
+	const unsigned short term_width = getWidth();
 
 	unsigned int max_dir_length = 0u;
 	std::string directory = ".";
 	for (auto &item : arg_parser.getOpts())
-		if (item.second.mode == Option::str && item.second.name != argv[0])
+		if (item.second.mode == Option::str && item.second.name != argv[0u])
+		{
 			directory = item.second.name;
+			break;
+		}
 
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string path = entry.path();
 		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
-		dir.push_back(file);
+		if (show_all)
+			dir.push_back(file);
+		else
+		{
+			if (file.name.front() == '.')
+				continue;
+			else
+				dir.push_back(file);
+		}
 
 		if (file.length() > max_dir_length)
 			max_dir_length = file.length();
@@ -123,7 +135,7 @@ int main(int argc, char **argv)
 	std::sort(dir.begin(), dir.end());
 
 	// Find the number of columns and rows to display in the Terminal
-	const unsigned short cols = term_width / (max_dir_length + 8),
+	const unsigned short cols = term_width / (max_dir_length + 8u),
 						 rows = cols == 0 ? 0 : dir.size() / cols;
 
 	if (rows > 1)
@@ -134,13 +146,13 @@ int main(int argc, char **argv)
 			for (size_t n = 0u; n < cols; n++)
 			{
 				if (i + n != dir.size())
-					std::cout << dir[i + n].str() << std::left << std::setw(max_dir_length - dir[i + n].length() + 4) << " ";
+					std::cout << dir[i + n].str() << std::left << std::setw(max_dir_length - dir[i + n].length() + 4u) << " ";
 			}
 			std::cout << std::endl;
 		}
 		std::cout << "    ";
 		for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
-			std::cout << dir[i].str() << std::left << std::setw(max_dir_length - dir[i].length() + 4) << " ";
+			std::cout << dir[i].str() << std::left << std::setw(max_dir_length - dir[i].length() + 4u) << " ";
 	}
 	else
 	{
@@ -156,13 +168,13 @@ int main(int argc, char **argv)
 		for (size_t i = 0; i < dir.size(); ++i)
 		{
 			if (total_len > dir[i].length())
-				std::cout << dir[i].str() << std::left << std::setw(4) << " ";
+				std::cout << dir[i].str() << std::left << std::setw(4u) << " ";
 			else
 			{
 				end_index = i;
 				flag = true;
 			}
-			total_len -= (dir[i].length() + 4);
+			total_len -= (dir[i].length() + 4u);
 		}
 
 		if (flag)
@@ -171,7 +183,7 @@ int main(int argc, char **argv)
 					  << "    ";
 
 			for (size_t i = end_index; i < dir.size(); ++i)
-				std::cout << dir[i].str() << std::left << std::setw(4) << " ";
+				std::cout << dir[i].str() << std::left << std::setw(4u) << " ";
 		}
 	}
 
