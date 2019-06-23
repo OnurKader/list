@@ -37,6 +37,7 @@ public:
 	std::unordered_map<std::string, Option> getOpts() const;
 	Option getOpt(const std::string) const;
 	Option getOpt(const std::string &) const;
+	bool optExists(const std::string &) const;
 	std::string getName() const;
 	void convert();
 };
@@ -115,6 +116,8 @@ std::unordered_map<std::string, Option> Args::getOpts() const { return options; 
 Option Args::getOpt(const std::string option) const { return options.at(option); }
 
 Option Args::getOpt(const std::string &option) const { return options.at(option); }
+
+bool Args::optExists(const std::string &option) const { return options.find(option) != options.end(); }
 
 std::string Args::getName() const { return name; }
 
