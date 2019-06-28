@@ -84,7 +84,8 @@ struct File
 	void findIcon()
 	{
 		const std::string extension = this->getExtension();
-		this->icon = icons.at(extension);
+		if (icons.find(extension) != icons.end())
+			this->icon = icons.at(extension);
 	}
 
 	unsigned int length() const { return name.size(); }
@@ -199,6 +200,7 @@ int main(int argc, char **argv)
 				std::cout << dir[i].str() << std::left << std::setw(4u) << " ";
 		}
 	}
+
 	std::cout << RESET << std::endl;
 	return 0;
 }

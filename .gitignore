@@ -1,5 +1,6 @@
 *.bak
 src/list
+bin/list
 *.txt
 *.out
 .*/
