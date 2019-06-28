@@ -48,7 +48,9 @@ const static std::string RESET = "\033[m",
 
 // Icon lookup map
 const static std::unordered_map<std::string, std::string> icons = {{"cpp", "\ue61d "},
-																   {"c", "\ue61e"}};
+																   {"c", "\ue61e "},
+																   {"cc", "\ue61d "},
+																   {"hpp", "\ue61d "}};
 
 struct File
 {
