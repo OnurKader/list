@@ -58,7 +58,7 @@ struct File
 
 	// Add Icon Functionality, .cpp files \ue61d and stuff, vscode git python java js ...
 
-	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file.substr(index)), icon("\uf15b "), isDir(dir), size(size) {}
+	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file.substr(index)), icon("\uf15b "), isDir(dir), size(size) { this->findIcon(); }
 
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
 	{
