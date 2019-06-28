@@ -46,6 +46,10 @@ const static std::string RESET = "\033[m",
 						 BROWN = "\033[38;2;142;69;23m",
 						 ORANGE = "\033[38;2;255;127;8m";
 
+// Icon lookup map
+const static std::unordered_map<std::string, std::string> icons = {{"cpp", "\ue61d "},
+																   {"c", "\ue61e"}};
+
 struct File
 {
 	std::string name, icon;
@@ -73,6 +77,14 @@ struct File
 		else
 			temp += GREEN + this->icon + this->name + ' ' + RESET;
 		return temp;
+	}
+
+	std::string inline getExtension() const { return (this->isDir ? "" : this->name.substr(this->name.rfind('.') + 1)); }
+
+	void findIcon()
+	{
+		const std::string extension = this->getExtension();
+		this->icon = icons.at(extension);
 	}
 
 	unsigned int length() const { return name.size(); }
@@ -187,7 +199,6 @@ int main(int argc, char **argv)
 				std::cout << dir[i].str() << std::left << std::setw(4u) << " ";
 		}
 	}
-
 	std::cout << RESET << std::endl;
 	return 0;
 }
