@@ -52,6 +52,20 @@ const static std::unordered_map<std::string, std::string> icons = {{"cpp", "\ue6
 																   {"cc", "\ue61d "},
 																   {"hpp", "\ue61d "}};
 
+// Human Readable File Sizes
+std::string humane(const uint64_t &size)
+{
+	char buff[8];
+	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
+	if (kilo)
+		sprintf(buff, "%.2f%c", giga ? (float)size / 1E9f : (mega ? (float)size / 1E6f : (kilo ? (float)size / 1E3f : (float)size)),
+				giga ? 'G' : mega ? 'M' : kilo ? 'K' : ' ');
+	else
+		sprintf(buff, "%ld", size);
+
+	return std::string(buff);
+}
+
 struct File
 {
 	std::string name, icon;
@@ -71,13 +85,15 @@ struct File
 		return os;
 	}
 
-	std::string str() const
+	std::string str(bool human_read = false) const
 	{
 		std::string temp = "";
 		if (this->isDir)
 			temp += Color(21, 162, 252).str() + "\ue5fe " + this->name + '/' + RESET;
 		else
+			// temp += GREEN + this->icon + this->name + ' ' + (human_read ? humane(this->size) : std::to_string(this->size)) + RESET;
 			temp += GREEN + this->icon + this->name + ' ' + RESET;
+
 		return temp;
 	}
 
@@ -163,12 +179,12 @@ int main(int argc, char **argv)
 			std::cout << "    ";
 			for (size_t n = 0u; n < cols; n++)
 				if (i + n != dir.size())
-					std::cout << dir[i + n].str() << std::left << std::setw(max_dir_length - dir[i + n].length() + 4u) << " ";
+					std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4u) << " ";
 			std::cout << std::endl;
 		}
 		std::cout << "    ";
 		for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
-			std::cout << dir[i].str() << std::left << std::setw(max_dir_length - dir[i].length() + 4u) << " ";
+			std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4u) << " ";
 	}
 	else
 	{
@@ -184,7 +200,7 @@ int main(int argc, char **argv)
 		for (size_t i = 0; i < dir.size(); ++i)
 		{
 			if (total_len > dir[i].length())
-				std::cout << dir[i].str() << std::left << std::setw(4u) << " ";
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(4u) << " ";
 			else
 			{
 				end_index = i;
@@ -199,10 +215,14 @@ int main(int argc, char **argv)
 					  << "    ";
 
 			for (size_t i = end_index; i < dir.size(); ++i)
-				std::cout << dir[i].str() << std::left << std::setw(4u) << " ";
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(4u) << " ";
 		}
 	}
 
-	std::cout << RESET << std::endl;
+	if (dir.size() == 0)
+		std::cout << Color(222, 198, 42) << "Nothing to show here..." << std::endl;
+	else
+		std::cout << RESET << std::endl;
+
 	return 0;
 }
