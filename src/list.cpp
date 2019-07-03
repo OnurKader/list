@@ -59,7 +59,7 @@ std::string humane(const uint64_t &size)
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
 	if (kilo)
 		sprintf(buff, "%.2f%c", giga ? (float)size / 1E9f : (mega ? (float)size / 1E6f : (kilo ? (float)size / 1E3f : (float)size)),
-				giga ? 'G' : mega ? 'M' : kilo ? 'K' : ' ');
+				giga ? 'G' : mega ? 'M' : kilo ? 'K' : 'B');
 	else
 		sprintf(buff, "%ld", size);
 
@@ -143,6 +143,13 @@ int main(int argc, char **argv)
 			directory = item.second.name;
 			break;
 		}
+
+	if (!std::filesystem::exists(std::filesystem::path(directory)))
+	{
+		std::cout << "\033[1;31m"
+				  << "Directory Not Found. " << RESET << std::endl;
+		return 1;
+	}
 
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
