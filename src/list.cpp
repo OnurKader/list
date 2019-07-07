@@ -63,7 +63,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"cs", "\uf81a "},
 	{"c#", "\uf81a "},
 	{"C#", "\uf81a "},
-	{"sh", "\uf977 "},
+	{"sh", "\uf977"},
 	{"py", "\ue235 "},
 	{"python", "\ue235 "},
 	{"Python", "\ue235 "},
@@ -167,7 +167,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"hooks", "\ufbe0 "},
 	{"branches", "\ue725 "},
 	// Games
-	{"steam", "\uf9d2 "},
+	{"steam", "\uf9d2"},
 	{"minecraft", "\uf872 "},
 	{"Minecraft", "\uf872 "},
 	{"Team Fortress 2", "\uf1b7 "}
