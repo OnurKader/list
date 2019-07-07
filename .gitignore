@@ -1,7 +1,7 @@
 *.bak
 src/list
 bin/list
-bin/
+bin/*
 *.txt
 *.out
 .*/
