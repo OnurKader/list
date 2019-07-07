@@ -50,15 +50,23 @@ const static std::string RESET = "\033[m",
 const static std::unordered_map<std::string, std::string> icons = {
 	// Programming
 	{"cpp", "\ue61d "},
+	{"c++", "\ue61d "},
+	{"C++", "\ue61d "},
 	{"c", "\ue61e "},
+	{"C", "\ue61e "},
 	{"cc", "\ue61d "},
 	{"hpp", "\ue61d "},
 	{"java", "\ue256 "},
+	{"Java", "\ue256 "},
 	{"class", "\ue256 "},
 	{"jar", "\ue256 "},
 	{"cs", "\uf81a "},
+	{"c#", "\uf81a "},
+	{"C#", "\uf81a "},
 	{"sh", "\uf977 "},
 	{"py", "\ue235 "},
+	{"python", "\ue235 "},
+	{"Python", "\ue235 "},
 	{"pyc", "\ue73c "},
 	{"php", "\uf81e "},
 	{"htm", "\ue60e "},
@@ -157,7 +165,12 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"FETCH_HEAD", "\ue708 "},
 	{"ORIG_HEAD", "\ue708 "},
 	{"hooks", "\ufbe0 "},
-	{"branches", "\ue725 "}
+	{"branches", "\ue725 "},
+	// Games
+	{"steam", "\uf9d2 "},
+	{"minecraft", "\uf872 "},
+	{"Minecraft", "\uf872 "},
+	{"Team Fortress 2", "\uf1b7 "}
 
 };
 
@@ -231,7 +244,7 @@ struct File
 	}
 };
 
-inline unsigned short getWidth() const
+inline unsigned short getWidth()
 {
 	struct winsize size;
 	ioctl(1, TIOCGWINSZ, &size);
