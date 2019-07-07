@@ -47,10 +47,119 @@ const static std::string RESET = "\033[m",
 						 ORANGE = "\033[38;2;255;127;8m";
 
 // Icon lookup map
-const static std::unordered_map<std::string, std::string> icons = {{"cpp", "\ue61d "},
-																   {"c", "\ue61e "},
-																   {"cc", "\ue61d "},
-																   {"hpp", "\ue61d "}};
+const static std::unordered_map<std::string, std::string> icons = {
+	// Programming
+	{"cpp", "\ue61d "},
+	{"c", "\ue61e "},
+	{"cc", "\ue61d "},
+	{"hpp", "\ue61d "},
+	{"java", "\ue256 "},
+	{"class", "\ue256 "},
+	{"jar", "\ue256 "},
+	{"cs", "\uf81a "},
+	{"sh", "\uf977 "},
+	{"py", "\ue235 "},
+	{"pyc", "\ue73c "},
+	{"php", "\uf81e "},
+	{"htm", "\ue60e "},
+	{"html", "\ue736 "},
+	{"css", "\ue749 "},
+	{"js", "\ue74e "},
+	{"ts", "\ue628 "},
+	{"vscode", "\ufb0f "},
+	{"code", "\ufb0f "},
+	{"json", "\ue60b "},
+	{"src", "\uf121 "},
+	// Vim
+	{"vim", "\ue62b "},
+	{"nvim", "\ue62b "},
+	{"vimrc", "\ue62b "},
+	// Audio
+	{"midi", "\uf886 "},
+	{"mid", "\uf886 "},
+	{"mp3", "\ufc58 "},
+	{"ogg", "\uf886 "},
+	{"mpa", "\ufc58 "},
+	{"wav", "\uf886 "},
+	{"wma", "\uf886 "},
+	// Video
+	{"avi", "\uf880 "},
+	{"h264", "\uf880 "},
+	{"m4v", "\uf880 "},
+	{"mkv", "\uf880 "},
+	{"mov", "\uf880 "},
+	{"mp4", "\uf880 "},
+	{"mpg", "\uf880 "},
+	{"mpeg", "\uf880 "},
+	{"wmv", "\uf880 "},
+	// Image
+	{"bmp", "\uf7e8 "},
+	{"gif", "\uf952 "},
+	{"jpg", "\uf03e "},
+	{"jpeg", "\uf03e "},
+	{"png", "\uf03e "},
+	{"ps", "\uf7ea "},
+	{"psd", "\ue7b8 "},
+	{"svg", "\ufc1f "},
+	{"tiff", "\ue60d "},
+	{"tif", "\ue60d "},
+	{"xcf", "\uf71e "},
+	// System Stuff (What about rc stuff, vimrc etc)
+	{"config", "\ue615 "},
+	{"cfg", "\ue615 "},
+	{"bak", "\ue615 "},
+	{"dll", "\uf830 "},
+	{"ico", "\uf6f2 "},
+	{"icon", "\uf6f2 "},
+	{"ini", "\ue70f "},
+	{"lnk", "\ufab2 "},
+	{"msi", "\ufab2 "},
+	{"exe", "\ufab2 "},
+	{"sys", "\ufab2 "},
+	{"temp", "\uf651 "},
+	{"tmp", "\uf651 "},
+	{"bin", "\uf114 "},
+	{"log", "\uf89d "},
+	// Office Stuff
+	{"doc", "\uf72c "},
+	{"docx", "\uf72c "},
+	{"odt", "\uf72c "},
+	{"pdf", "\uf1c1 "},
+	{"rtf", "\uf15c"},
+	{"txt", "\uf0f6 "},
+	{"xls", "\uf1c3 "},
+	{"xlsx", "\uf1c3 "},
+	{"ods", "\uf1c3 "},
+	{"odp", "\uf1c4 "},
+	{"ppt", "\uf1c4 "},
+	{"pps", "\uf1c4 "},
+	{"pptx", "\uf1c4 "},
+	{"md", "\ue609 "},
+	{"latex", "\ue612 "},
+	{"tex", "\ue612 "},
+	// Archive & Compress
+	{"7z", "\uf1c6 "},
+	{"deb", "\uf306 "},
+	{"pkg", "\uf487 "},
+	{"rar", "\ufac3 "},
+	{"zip", "\uf1c6 "},
+	{"rpm", "\uf316 "},
+	{"tar", "\uf1c6"},
+	{"gz", "\uf1c6"},
+	{"bzip", "\uf066 "},
+	{"bz2", "\uf066 "},
+	{"bzip2", "\uf066 "},
+	{"z", "\uf1c6 "},
+	// Git
+	{"git", "\ue5fb "},
+	{"gitignore", "\uf1d3 "},
+	{"HEAD", "\ue708 "},
+	{"FETCH_HEAD", "\ue708 "},
+	{"ORIG_HEAD", "\ue708 "},
+	{"hooks", "\ufbe0 "},
+	{"branches", "\ue725 "}
+
+};
 
 // Human Readable File Sizes
 std::string humane(const uint64_t &size)
@@ -72,16 +181,14 @@ struct File
 	bool isDir;
 	uint64_t size;
 
-	// Add Icon Functionality, .cpp files \ue61d and stuff, vscode git python java js ...
-
 	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file.substr(index)), icon("\uf15b "), isDir(dir), size(size) { this->findIcon(); }
 
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
 	{
 		if (file.isDir)
-			os << Color(21, 162, 252) << "\ue5fe " << file.name << '/' << RESET;
+			os << Color(21, 162, 252) << (file.icon == "\uf15b " ? "\ue5fe " : file.icon) << file.name << '/' << RESET;
 		else
-			os << GREEN << file.icon << file.name << ' ' << RESET;
+			os << GREEN << file.icon << file.name << RESET << ' ';
 		return os;
 	}
 
@@ -89,24 +196,30 @@ struct File
 	{
 		std::string temp = "";
 		if (this->isDir)
-			temp += Color(21, 162, 252).str() + "\ue5fe " + this->name + '/' + RESET;
+			temp += Color(21, 162, 252).str() + (this->icon == "\uf15b " ? "\ue5fe " : this->icon) + this->name + '/' + RESET;
 		else
 			// temp += GREEN + this->icon + this->name + ' ' + (human_read ? humane(this->size) : std::to_string(this->size)) + RESET;
-			temp += GREEN + this->icon + this->name + ' ' + RESET;
+			temp += GREEN + this->icon + this->name + RESET + ' ';
 
 		return temp;
 	}
 
-	std::string inline getExtension() const { return (this->isDir ? "" : this->name.substr(this->name.rfind('.') + 1)); }
+	std::string inline getExtension() const
+	{
+		if (this->name.find('.') != std::string::npos)
+			return this->name.substr(this->name.rfind('.') + 1);
+		else
+			return this->name;
+	}
 
 	void findIcon()
 	{
-		const std::string extension = this->getExtension();
+		const std::string &extension = this->getExtension();
 		if (icons.find(extension) != icons.end())
 			this->icon = icons.at(extension);
 	}
 
-	unsigned int length() const { return name.size(); }
+	unsigned long length() const { return name.size(); }
 
 	bool operator<(const File &file) const
 	{
@@ -118,7 +231,7 @@ struct File
 	}
 };
 
-inline unsigned short getWidth()
+inline unsigned short getWidth() const
 {
 	struct winsize size;
 	ioctl(1, TIOCGWINSZ, &size);
