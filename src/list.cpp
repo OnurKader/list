@@ -112,7 +112,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"tiff", "\ue60d "},
 	{"tif", "\ue60d "},
 	{"xcf", "\uf71e "},
-	// System Stuff (What about rc stuff, vimrc etc)
+	// System Stuff
 	{"config", "\ue615 "},
 	{"conf", "\ue615 "},
 	{"zsh_history", "\uf7d9 "},
@@ -166,6 +166,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	// Git
 	{"git", "\ue5fb "},
 	{"gitignore", "\uf1d3 "},
+	{"gitconfig", "\uf1d3 "},
 	{"HEAD", "\ue708 "},
 	{"FETCH_HEAD", "\ue708 "},
 	{"ORIG_HEAD", "\ue708 "},
