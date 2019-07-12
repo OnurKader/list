@@ -359,7 +359,7 @@ int main(int argc, char **argv)
 	}
 
 	if (dir.size() == 0)
-		std::cout << Color(222, 198, 42) << "Nothing to show here..." << std::endl;
+		std::cout << Color(228, 195, 39) << "Nothing to show here..." << std::endl;
 	else
 		std::cout << RESET << std::endl;
 
