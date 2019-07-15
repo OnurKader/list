@@ -157,8 +157,8 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"rar", "\ufac3 "},
 	{"zip", "\uf1c6 "},
 	{"rpm", "\uf316 "},
-	{"tar", "\uf1c6"},
-	{"gz", "\uf1c6"},
+	{"tar", "\uf1c6 "},
+	{"gz", "\uf1c6 "},
 	{"bzip", "\uf066 "},
 	{"bz2", "\uf066 "},
 	{"bzip2", "\uf066 "},
@@ -262,14 +262,14 @@ int main(int argc, char **argv)
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
 	std::vector<File> dir;
-	dir.reserve(64u);
+	dir.reserve(64U);
 	bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
 
 	const unsigned short term_width = getWidth();
 
-	unsigned int max_dir_length = 0u;
+	unsigned int max_dir_length = 0U;
 	std::string directory(".");
-	for (auto &item : arg_parser.getOpts())
+	for (const auto &item : arg_parser.getOpts())
 		if (item.second.mode == Option::str && item.second.name != argv[0u])
 		{
 			directory = item.second.name;
@@ -280,12 +280,12 @@ int main(int argc, char **argv)
 	{
 		std::cout << "\033[1;31m"
 				  << "Directory Not Found. " << RESET << std::endl;
-		return 1;
+		return 3;
 	}
 
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
-		const std::string path = entry.path();
+		const std::string &path = entry.path();
 		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
 
 		if (show_all) // -a
@@ -302,50 +302,67 @@ int main(int argc, char **argv)
 			max_dir_length = file.length();
 	}
 
+	if (dir.size() == 0)
+	{
+		std::cout << Color(228, 195, 39) << "Nothing to show here..." << RESET << std::endl;
+		return 3;
+	}
+
 	// Sort Directories Alphabetically
 	// .dotfolders first, 'CAPITAL' before 'lower'
 	// Dirs before Files
 	std::sort(dir.begin(), dir.end());
 
 	// Find the number of columns and rows to display in the Terminal
-	const unsigned short cols = term_width / (max_dir_length + 8u),
-						 rows = cols == 0 ? 0 : dir.size() / cols;
+	const unsigned short cols = term_width / (max_dir_length + 8U);
+	unsigned short rows = dir.size() / cols;
+	unsigned int total_length = 4U;
+	for (const File &item : dir)
+	{
+		total_length += item.length() + 6U;
+		if (total_length >= term_width)
+		{
+			++rows;
+			break;
+		}
+	}
 
 	if (rows > 1)
 	{
-		for (size_t i = 0u; i < dir.size() - (dir.size() % cols); i += (cols))
+		for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
 		{
 			std::cout << "    ";
-			for (size_t n = 0u; n < cols; n++)
+			for (size_t n = 0U; n < cols; n++)
 				if (i + n != dir.size())
-					std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4u) << " ";
+					std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
 			std::cout << std::endl;
 		}
 		std::cout << "    ";
 		for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
-			std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4u) << " ";
+			std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
 	}
 	else
 	{
-		unsigned int total_len = 0u;
+		unsigned int total_len = 4U;
 		size_t end_index = dir.size();
 		// TODO Name Variables properly
 		bool flag = false;
 
 		for (auto iter = dir.begin(); iter != dir.end(); ++iter)
-			total_len += iter->length() + 4u;
+			total_len += iter->length() + 4U;
 
 		std::cout << "    ";
-		for (size_t i = 0; i < dir.size(); ++i)
+		for (size_t i = 0U; i < dir.size(); ++i)
 		{
 			if (total_len > dir[i].length())
-				std::cout << dir[i].str(human_readable) << std::left << std::setw(4u) << " ";
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(4U) << ' ';
 			else
 			{
 				end_index = i;
 				flag = true;
 			}
-			total_len -= (dir[i].length() + 4u);
+			// total_len -= (dir[i].length() + 4U);
+			total_len -= (dir[i].length() + 1U);
 		}
 
 		if (flag)
@@ -354,14 +371,10 @@ int main(int argc, char **argv)
 					  << "    ";
 
 			for (size_t i = end_index; i < dir.size(); ++i)
-				std::cout << dir[i].str(human_readable) << std::left << std::setw(4u) << " ";
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(4U) << " ";
 		}
 	}
-
-	if (dir.size() == 0)
-		std::cout << Color(228, 195, 39) << "Nothing to show here..." << std::endl;
-	else
-		std::cout << RESET << std::endl;
+	std::cout << std::endl;
 
 	return 0;
 }
