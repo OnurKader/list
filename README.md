@@ -21,8 +21,8 @@ ___
 	(Doesn't write to root, so we don't need root privileges)
 
 ##### Screenshots
-![My Home Directory](./imgs/Screenshot from 2019-07-15 16-26-43.png  "Home")
+![My Home Directory](https://github.com/OnurKader/list/blob/fixme/imgs/Screenshot%20from%202019-07-15%2016-26-43.png  "Home")
 ___
-![Single Row](./imgs/Screenshot from 2019-07-15 16-25-40.png  "One Row Printing")
+![Single Row](https://github.com/OnurKader/list/blob/fixme/imgs/Screenshot%20from%202019-07-15%2016-25-40.png  "One Row Printing")
 ___
-![Multi Rows Single Column](./imgs/Screenshot from 2019-07-15 16-25-08.png  "Multiple Rows")
+![Multi Rows Single Column](https://github.com/OnurKader/list/blob/fixme/imgs/Screenshot%20from%202019-07-15%2016-25-08.png  "Multiple Rows")
