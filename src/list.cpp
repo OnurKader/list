@@ -1,4 +1,4 @@
-#include <iostream>
+#include </usr/local/gcc-9.1/include/c++/9.1.0/iostream>
 #include "args.hpp"
 #include <iomanip>
 #include <algorithm>
@@ -345,7 +345,8 @@ int main(int argc, char **argv)
 	else
 	{
 		std::cout << "    ";
-		for(const File& item: dir) std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
+		for (const File &item : dir)
+			std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
 	}
 	std::cout << std::endl;
 

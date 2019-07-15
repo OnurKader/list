@@ -12,6 +12,7 @@ ___
 ##### Installation
 **TODO**
 - [x] Fix the one row bug
+- [ ] Fix Floating Point Exception when `term_width < file_width`
 - [ ] Add A Makefile
 
 **Run the following command in the _'list'_ directory**
@@ -19,3 +20,9 @@ ___
 `g++ -o bin/list src/list.cpp -O3 -std=c++17 -lstdc++fs`
 	(Doesn't write to root, so we don't need root privileges)
 
+##### Screenshots
+![My Home Directory](./imgs/Screenshot from 2019-07-15 16-26-43.png  "Home")
+___
+![Single Row](./imgs/Screenshot from 2019-07-15 16-25-40.png  "One Row Printing")
+___
+![Multi Rows Single Column](./imgs/Screenshot from 2019-07-15 16-25-08.png  "Multiple Rows")
