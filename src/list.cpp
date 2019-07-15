@@ -276,6 +276,7 @@ int main(int argc, char **argv)
 			break;
 		}
 
+	// FIXME `la a (ls -a a)` doesn't give an error while `ls a` does???
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
 		std::cout << "\033[1;31m"
@@ -343,36 +344,8 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		unsigned int total_len = 4U;
-		size_t end_index = dir.size();
-		// TODO Name Variables properly
-		bool flag = false;
-
-		for (auto iter = dir.begin(); iter != dir.end(); ++iter)
-			total_len += iter->length() + 4U;
-
 		std::cout << "    ";
-		for (size_t i = 0U; i < dir.size(); ++i)
-		{
-			if (total_len > dir[i].length())
-				std::cout << dir[i].str(human_readable) << std::left << std::setw(4U) << ' ';
-			else
-			{
-				end_index = i;
-				flag = true;
-			}
-			// total_len -= (dir[i].length() + 4U);
-			total_len -= (dir[i].length() + 1U);
-		}
-
-		if (flag)
-		{
-			std::cout << std::endl
-					  << "    ";
-
-			for (size_t i = end_index; i < dir.size(); ++i)
-				std::cout << dir[i].str(human_readable) << std::left << std::setw(4U) << " ";
-		}
+		for(const File& item: dir) std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
 	}
 	std::cout << std::endl;
 
