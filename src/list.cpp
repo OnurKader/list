@@ -259,36 +259,47 @@ inline unsigned short getWidth()
 
 int main(int argc, char **argv)
 {
+
+	// Get the arguments and convert them to appropriate strings, differentiate -x, --xxx, xxx
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
+
+	// The vector in which the files and directories are stored
 	std::vector<File> dir;
 	dir.reserve(64U);
-	bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
 
-	const unsigned short term_width = getWidth();
+	// Specific options, maybe just use a 3rd Party header
+	bool show_all = arg_parser.optExists("a"),
+		 show_list = arg_parser.optExists("l"),
+		 human_readable = arg_parser.optExists("h");
 
-	unsigned int max_dir_length = 0U;
 	std::string directory(".");
 	for (const auto &item : arg_parser.getOpts())
-		if (item.second.mode == Option::str && item.second.name != argv[0u])
+		if (item.second.mode == Option::str && item.second.name != argv[0U])
 		{
 			directory = item.second.name;
 			break;
 		}
 
 	// FIXME `la a (ls -a a)` doesn't give an error while `ls a` does???
+	// FIXME `la Comics` when terminal width < max_dir_length throws a floating point exception?
+
+	// If the directory doesn't exist, print a message and `return 3`
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
-		std::cout << "\033[1;31m"
-				  << "Directory Not Found. " << RESET << std::endl;
+		std::cerr << "\033[1;31m"
+				  << "Directory Not Found." << RESET << std::endl;
 		return 3;
 	}
+
+	unsigned int max_dir_length = 0U;
 
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string &path = entry.path();
-		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
+		File file(path, path.rfind('/') + 1U, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0UL);
 
+		// Don't push .dotfiles in the vector if `-a` isn't specified
 		if (show_all) // -a
 			dir.push_back(file);
 		else
@@ -299,14 +310,16 @@ int main(int argc, char **argv)
 				dir.push_back(file);
 		}
 
+		// Get the longest file/directory in the directory, to be used when spacing the columns
 		if (file.length() > max_dir_length)
 			max_dir_length = file.length();
 	}
 
+	// If the directory is empty
 	if (dir.size() == 0)
 	{
-		std::cout << Color(228, 195, 39) << "Nothing to show here..." << RESET << std::endl;
-		return 3;
+		std::cout << Color(229, 194, 37) << "Nothing to show here..." << RESET << std::endl;
+		return 3; // Maybe return 0, nothing went wrong...
 	}
 
 	// Sort Directories Alphabetically
@@ -315,9 +328,11 @@ int main(int argc, char **argv)
 	std::sort(dir.begin(), dir.end());
 
 	// Find the number of columns and rows to display in the Terminal
+	const unsigned short term_width = getWidth();
 	const unsigned short cols = term_width / (max_dir_length + 8U);
 	unsigned short rows = dir.size() / cols;
-	unsigned int total_length = 4U;
+
+	unsigned int total_length = 6U;
 	for (const File &item : dir)
 	{
 		total_length += item.length() + 6U;
@@ -330,22 +345,31 @@ int main(int argc, char **argv)
 
 	if (rows > 1)
 	{
-		for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
+		// If the maximum file length doesn't fit the terminal, print each file on a new line
+		if (max_dir_length >= term_width)
+			for (const File &item : dir)
+				std::cout << item.str(human_readable) << std::endl;
+		else
 		{
+			for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
+			{
+				std::cout << "    ";
+				for (size_t n = 0U; n < cols; n++)
+					if (i + n != dir.size())
+						std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
+				std::cout << std::endl;
+			}
 			std::cout << "    ";
-			for (size_t n = 0U; n < cols; n++)
-				if (i + n != dir.size())
-					std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
-			std::cout << std::endl;
+			for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
 		}
-		std::cout << "    ";
-		for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
-			std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
 	}
 	else
 	{
+		// Single Row Printing
 		std::cout << "    ";
-		for(const File& item: dir) std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
+		for (const File &item : dir)
+			std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
 	}
 	std::cout << std::endl;
 
