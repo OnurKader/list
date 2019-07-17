@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 	arg_parser.convert();
 	std::vector<File> dir;
 	dir.reserve(64U);
-	bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
+	const bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
 
 	const unsigned short term_width = getWidth();
 

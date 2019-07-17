@@ -46,12 +46,11 @@ public:
 
 Args::Args() : name("How Can A Program Have No Name?!")
 {
-	arguments.reserve(4);
+	arguments.reserve(2);
 }
 
 Args::Args(int &argc, char **argv) : name(std::string(argv[0]).substr(std::string(argv[0]).rfind('/') + 1))
 {
-	arguments.reserve(argc);
 	for (size_t i = 0; i < (unsigned)argc; ++i)
 		arguments.push_back(std::string(argv[i]));
 }
@@ -64,7 +63,6 @@ Args::~Args()
 
 void Args::parseArgs(int &argc, char **argv)
 {
-	arguments.reserve(argc);
 	for (size_t i = 0; i < (unsigned)argc; ++i)
 		arguments.push_back(std::string(argv[i]));
 }
@@ -82,7 +80,6 @@ void Args::parseOpt(const std::string &option)
 		delete temp;
 	}
 	else if (option.front() == '-')
-	{
 		// For every letter after -x add that option, for loop
 		for (unsigned char letter : option.substr(1))
 		{
@@ -93,13 +90,8 @@ void Args::parseOpt(const std::string &option)
 			options.insert(std::make_pair(str, *temp));
 			delete temp;
 		}
-	}
 	else
-	{
-		Option *temp = new Option(option);
-		options.insert(std::make_pair(option, *temp));
-		delete temp;
-	}
+		options.insert(std::make_pair(option, *(new Option(option))));
 }
 
 void Args::parseOpts(const std::vector<std::string> &options)
