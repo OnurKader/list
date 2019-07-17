@@ -13,6 +13,7 @@ ___
 **TODO**
 - [x] Fix the one row bug
 - [ ] Fix Floating Point Exception when `term_width < file_width`
+- [ ] Fix the case when list -a a doesnt return 'Directory Not Found', but list a -a does...
 - [ ] Add A Makefile
 
 **Run the following command in the _'list'_ directory**
