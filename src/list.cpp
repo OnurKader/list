@@ -259,24 +259,26 @@ inline unsigned short getWidth()
 
 int main(int argc, char **argv)
 {
+	// Parse the arguments
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
+
 	std::vector<File> dir;
 	dir.reserve(32U);
-	const bool show_all = arg_parser.optExists("-a"), show_list = arg_parser.optExists("-l"), human_readable = arg_parser.optExists("-h");
+	const bool show_all = arg_parser.optExists("-a"),
+			   show_list = arg_parser.optExists("-l"),
+			   human_readable = arg_parser.optExists("-h");
 
 	const unsigned short term_width = getWidth();
 
 	unsigned int max_dir_length = 0U;
 	std::string directory(".");
 	for (const auto &item : arg_parser.getOpts())
-	{
 		if (item.second.mode == Option::str && item.second.name != argv[0U])
 		{
 			directory = item.second.name;
 			break;
 		}
-	}
 
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
@@ -320,10 +322,12 @@ int main(int argc, char **argv)
 	// Find the number of columns and rows to display in the Terminal
 	const unsigned short cols = term_width / (max_dir_length + 8U);
 
+	// Determine if every file/dir name combined with spaces can fit in a single row
 	unsigned short rows = dir.size() / cols;
 	unsigned int total_length = 4U;
 	for (const File &item : dir)
 	{
+		// 6U because of the file icon and the space after it
 		total_length += item.length() + 6U;
 		if (total_length >= term_width)
 		{
@@ -344,15 +348,16 @@ int main(int argc, char **argv)
 		}
 		if (dir.size() % cols != 0)
 		{
+			// If there are any files on the last row
 			std::cout << "    ";
 			for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
 				std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
 			std::cout << std::endl;
 		}
 	}
-	// Single Row
 	else
 	{
+		// Single Row
 		std::cout << "    ";
 		for (const File &item : dir)
 			std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
