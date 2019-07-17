@@ -263,14 +263,14 @@ int main(int argc, char **argv)
 	arg_parser.convert();
 	std::vector<File> dir;
 	dir.reserve(64U);
-	const bool show_all = arg_parser.optExists("a") && arg_parser.getOpt("a").mode != Option::str, show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
+	const bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
 
 	const unsigned short term_width = getWidth();
 
 	unsigned int max_dir_length = 0U;
 	std::string directory(".");
 	for (const auto &item : arg_parser.getOpts())
-		if (item.second.mode == Option::str && item.second.name != argv[0u])
+		if (item.second.mode == Option::str && item.second.name != argv[0U])
 		{
 			directory = item.second.name;
 			break;
