@@ -27,15 +27,11 @@ private:
 	const std::string name;
 
 public:
-	Args();
 	Args(int &, char **);
 	~Args();
-	void parseArgs(int &, char **);
 	std::vector<std::string> getArgs() const;
 	void parseOpt(const std::string &);
-	void parseOpts(const std::vector<std::string> &);
 	std::unordered_map<std::string, Option> getOpts() const;
-	Option getOpt(const std::string) const;
 	Option getOpt(const std::string &) const;
 	bool optExists(const std::string &) const;
 	std::string getName() const;
@@ -43,11 +39,6 @@ public:
 };
 
 #endif
-
-Args::Args() : name("How Can A Program Have No Name?!")
-{
-	arguments.reserve(2);
-}
 
 Args::Args(int &argc, char **argv) : name(std::string(argv[0]).substr(std::string(argv[0]).rfind('/') + 1))
 {
@@ -61,14 +52,9 @@ Args::~Args()
 	options.clear();
 }
 
-void Args::parseArgs(int &argc, char **argv)
-{
-	for (size_t i = 0; i < (unsigned)argc; ++i)
-		arguments.push_back(std::string(argv[i]));
-}
-
 std::vector<std::string> Args::getArgs() const { return arguments; }
 
+// Push the given option, --xxx | -x | x, into the options map
 void Args::parseOpt(const std::string &option)
 {
 	// Add --'color'=auto, now it's just --'color=auto'
@@ -80,9 +66,11 @@ void Args::parseOpt(const std::string &option)
 		delete temp;
 	}
 	else if (option.front() == '-')
-		// For every letter after -x add that option, for loop
-		for (unsigned char letter : option.substr(1))
+		// For every letter after -x add that option, -lah eg.
+		for (const unsigned char &letter : option.substr(1))
 		{
+			if (letter == ' ')
+				break;
 			std::string str;
 			str.assign(1, letter);
 			Option *temp = new Option(str);
@@ -94,20 +82,9 @@ void Args::parseOpt(const std::string &option)
 		options.insert(std::make_pair(option, *(new Option(option))));
 }
 
-void Args::parseOpts(const std::vector<std::string> &options)
-{
-	for (const std::string &option : options)
-	{
-		Option temp(option);
-		parseOpt(option);
-	}
-}
-
 std::unordered_map<std::string, Option> Args::getOpts() const { return options; }
 
-Option Args::getOpt(const std::string option) const { return options.at(option); }
-
-Option Args::getOpt(const std::string &option) const { return options.at(option); }
+Option Args::getOpt(const std::string &option) const { return optExists(option) ? options.at(option) : Option(); }
 
 bool Args::optExists(const std::string &option) const { return options.find(option) != options.end(); }
 

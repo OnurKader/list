@@ -7,44 +7,44 @@
 
 class Color
 {
-	private:
-		uint8_t r, g, b;
+private:
+	uint8_t r, g, b;
 
-		friend std::ostream &operator<<(std::ostream &os, const Color &color)
-		{
-			char buffer[32];
-			sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
-			os << buffer;
-			return os;
-		}
+	friend std::ostream &operator<<(std::ostream &os, const Color &color)
+	{
+		char buffer[32];
+		sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
+		os << buffer;
+		return os;
+	}
 
-	public:
-		const std::string str() const
-		{
-			char buffer[32];
-			sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
-			return std::string(buffer);
-		}
+public:
+	const std::string str() const
+	{
+		char buffer[32];
+		sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
+		return std::string(buffer);
+	}
 
-		Color() : r(0), g(0), b(0) {}
-		explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
-		explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+	Color() : r(0), g(0), b(0) {}
+	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
+	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 
 // COMMON COLORS
 const static std::string RESET = "\033[m",
-	  BLACK = "\033[38;2;0;0;0m",
-	  WHITE = "\033[38;2;255;255;255m",
-	  RED = "\033[38;2;255;0;0m",
-	  GREEN = "\033[38;2;0;255;0m",
-	  BUE = "\033[38;2;0;0;255m",
-	  YELLOW = "\033[38;2;255;255;0m",
-	  MAGENTA = "\033[38;2;255;0;255m",
-	  CYAN = "\033[38;0;2;255;255m",
-	  PURPE = "\033[38;2;127;32;183m",
-	  LIME = "\033[38;2;111;255;8m",
-	  BROWN = "\033[38;2;142;69;23m",
-	  ORANGE = "\033[38;2;255;127;8m";
+						 BLACK = "\033[38;2;0;0;0m",
+						 WHITE = "\033[38;2;255;255;255m",
+						 RED = "\033[38;2;255;0;0m",
+						 GREEN = "\033[38;2;0;255;0m",
+						 BUE = "\033[38;2;0;0;255m",
+						 YELLOW = "\033[38;2;255;255;0m",
+						 MAGENTA = "\033[38;2;255;0;255m",
+						 CYAN = "\033[38;0;2;255;255m",
+						 PURPE = "\033[38;2;127;32;183m",
+						 LIME = "\033[38;2;111;255;8m",
+						 BROWN = "\033[38;2;142;69;23m",
+						 ORANGE = "\033[38;2;255;127;8m";
 
 // Icon lookup map
 const static std::unordered_map<std::string, std::string> icons = {
@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 	arg_parser.convert();
 	std::vector<File> dir;
 	dir.reserve(64U);
-	const bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
+	const bool show_all = arg_parser.optExists("a") && arg_parser.getOpt("a").mode != Option::str, show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
 
 	const unsigned short term_width = getWidth();
 
@@ -277,10 +277,11 @@ int main(int argc, char **argv)
 		}
 
 	// FIXME `la a (ls -a a)` doesn't give an error while `ls a` does???
+
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
-		std::cout << "\033[1;31m"
-			<< "Directory Not Found. " << RESET << std::endl;
+		std::cout << "    \033[1;31m"
+				  << "Directory Not Found. " << RESET << std::endl;
 		return 3;
 	}
 
@@ -341,12 +342,14 @@ int main(int argc, char **argv)
 					std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
 			std::cout << std::endl;
 		}
-		if(dir.size() % cols != 0){
-		std::cout << "    ";
-		for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
-			std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
-		std::cout << std::endl;
-	}}
+		if (dir.size() % cols != 0)
+		{
+			std::cout << "    ";
+			for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
+			std::cout << std::endl;
+		}
+	}
 	// Single Row
 	else
 	{
@@ -356,7 +359,5 @@ int main(int argc, char **argv)
 		std::cout << std::endl;
 	}
 
-
 	return 0;
 }
-
