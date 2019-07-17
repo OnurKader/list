@@ -1,8 +1,8 @@
 #include </usr/local/gcc-9.1/include/c++/9.1.0/iostream>
 #include "args.hpp"
 #include <iomanip>
-#include <algorithm>
 #include <sys/ioctl.h>
+#include <algorithm>
 #include <filesystem>
 
 class Color
@@ -262,21 +262,21 @@ int main(int argc, char **argv)
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
 	std::vector<File> dir;
-	dir.reserve(64U);
-	const bool show_all = arg_parser.optExists("a"), show_list = arg_parser.optExists("l"), human_readable = arg_parser.optExists("h");
+	dir.reserve(32U);
+	const bool show_all = arg_parser.optExists("-a"), show_list = arg_parser.optExists("-l"), human_readable = arg_parser.optExists("-h");
 
 	const unsigned short term_width = getWidth();
 
 	unsigned int max_dir_length = 0U;
 	std::string directory(".");
 	for (const auto &item : arg_parser.getOpts())
+	{
 		if (item.second.mode == Option::str && item.second.name != argv[0U])
 		{
 			directory = item.second.name;
 			break;
 		}
-
-	// FIXME `la a (ls -a a)` doesn't give an error while `ls a` does???
+	}
 
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
@@ -289,7 +289,7 @@ int main(int argc, char **argv)
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string &path = entry.path();
-		File file(path, path.rfind('/') + 1u, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0ul);
+		File file(path, path.rfind('/') + 1U, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0UL);
 
 		if (show_all) // -a
 			dir.push_back(file);
@@ -306,9 +306,9 @@ int main(int argc, char **argv)
 	}
 
 	// Empty Directory
-	if (dir.size() == 0)
+	if (dir.size() == 0U)
 	{
-		std::cout << Color(228, 195, 39) << "\tNothing to show here..." << RESET << std::endl;
+		std::cout << "    " << Color(228, 195, 39) << "Nothing to show here..." << RESET << std::endl;
 		return 0;
 	}
 

@@ -62,17 +62,17 @@ void Args::parseOpt(const std::string &option)
 	{
 		Option *temp = new Option(option);
 		temp->mode = Option::double_dashed;
-		options.insert(std::make_pair(option.substr(2), *temp));
+		options.insert(std::make_pair(option, *temp));
 		delete temp;
 	}
 	else if (option.front() == '-')
 		// For every letter after -x add that option, -lah eg.
-		for (const unsigned char &letter : option.substr(1))
+		for (const char &letter : option.substr(1U))
 		{
 			if (letter == ' ')
 				break;
-			std::string str;
-			str.assign(1, letter);
+			std::string str("-");
+			str += letter;
 			Option *temp = new Option(str);
 			temp->mode = Option::dashed;
 			options.insert(std::make_pair(str, *temp));
