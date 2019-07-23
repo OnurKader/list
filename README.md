@@ -12,9 +12,10 @@ ___
 ##### Installation
 **TODO**
 - [x] Fix the one row bug
-- [ ] Fix Floating Point Exception when `term_width < file_width`
-- [ ] Fix the case when list -a a doesnt return 'Directory Not Found', but list a -a does...
+- [x] Fix the case when list -a a doesnt return 'Directory Not Found', but list a -a does...
+- [x] Fix Floating Point Exception when `term_width < file_width`
 - [ ] Add A Makefile
+- [ ] Put the long list of icons in another file
 
 **Run the following command in the _'list'_ directory**
 

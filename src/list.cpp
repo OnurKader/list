@@ -7,44 +7,44 @@
 
 class Color
 {
-private:
-	uint8_t r, g, b;
+	private:
+		uint8_t r, g, b;
 
-	friend std::ostream &operator<<(std::ostream &os, const Color &color)
-	{
-		char buffer[32];
-		sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
-		os << buffer;
-		return os;
-	}
+		friend std::ostream &operator<<(std::ostream &os, const Color &color)
+		{
+			char buffer[32];
+			sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
+			os << buffer;
+			return os;
+		}
 
-public:
-	const std::string str() const
-	{
-		char buffer[32];
-		sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
-		return std::string(buffer);
-	}
+	public:
+		const std::string str() const
+		{
+			char buffer[32];
+			sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
+			return std::string(buffer);
+		}
 
-	Color() : r(0), g(0), b(0) {}
-	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
-	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+		Color() : r(0), g(0), b(0) {}
+		explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
+		explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 
 // COMMON COLORS
 const static std::string RESET = "\033[m",
-						 BLACK = "\033[38;2;0;0;0m",
-						 WHITE = "\033[38;2;255;255;255m",
-						 RED = "\033[38;2;255;0;0m",
-						 GREEN = "\033[38;2;0;255;0m",
-						 BUE = "\033[38;2;0;0;255m",
-						 YELLOW = "\033[38;2;255;255;0m",
-						 MAGENTA = "\033[38;2;255;0;255m",
-						 CYAN = "\033[38;0;2;255;255m",
-						 PURPE = "\033[38;2;127;32;183m",
-						 LIME = "\033[38;2;111;255;8m",
-						 BROWN = "\033[38;2;142;69;23m",
-						 ORANGE = "\033[38;2;255;127;8m";
+	  BLACK = "\033[38;2;0;0;0m",
+	  WHITE = "\033[38;2;255;255;255m",
+	  RED = "\033[38;2;255;0;0m",
+	  GREEN = "\033[38;2;0;255;0m",
+	  BUE = "\033[38;2;0;0;255m",
+	  YELLOW = "\033[38;2;255;255;0m",
+	  MAGENTA = "\033[38;2;255;0;255m",
+	  CYAN = "\033[38;0;2;255;255m",
+	  PURPE = "\033[38;2;127;32;183m",
+	  LIME = "\033[38;2;111;255;8m",
+	  BROWN = "\033[38;2;142;69;23m",
+	  ORANGE = "\033[38;2;255;127;8m";
 
 // Icon lookup map
 const static std::unordered_map<std::string, std::string> icons = {
@@ -266,8 +266,8 @@ int main(int argc, char **argv)
 	std::vector<File> dir;
 	dir.reserve(32U);
 	const bool show_all = arg_parser.optExists("-a"),
-			   show_list = arg_parser.optExists("-l"),
-			   human_readable = arg_parser.optExists("-h");
+		  show_list = arg_parser.optExists("-l"),
+		  human_readable = arg_parser.optExists("-h");
 
 	const unsigned short term_width = getWidth();
 
@@ -283,11 +283,11 @@ int main(int argc, char **argv)
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
 		std::cout << "    \033[1;31m"
-				  << "Directory Not Found. " << RESET << std::endl;
+			<< "Directory Not Found. " << RESET << std::endl;
 		return 3;
 	}
 
-	// Push Files into dir Vector
+	// Push Files into dir Vector, if -a isn't specified don't put dotfiles in
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string &path = entry.path();
@@ -323,11 +323,13 @@ int main(int argc, char **argv)
 	const unsigned short cols = term_width / (max_dir_length + 8U);
 
 	// Determine if every file/dir name combined with spaces can fit in a single row
-	unsigned short rows = dir.size() / cols;
+	const bool long_filename = cols == 0U;
+	unsigned short rows = long_filename ? 0U : dir.size() / cols;
 	unsigned int total_length = 4U;
 	for (const File &item : dir)
 	{
 		// 6U because of the file icon and the space after it
+		// My rows & cols counting sucks so I do an extra check for one row cases
 		total_length += item.length() + 6U;
 		if (total_length >= term_width)
 		{
@@ -336,7 +338,10 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (rows > 1)
+	if(long_filename && rows == 1)
+		for(const File& item : dir)
+			std::cout << "    " << item.str(human_readable) << std::endl;
+	else if (rows > 1)
 	{
 		for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
 		{
