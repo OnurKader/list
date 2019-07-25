@@ -1,4 +1,4 @@
-#include </usr/local/gcc-9.1/include/c++/9.1.0/iostream>
+#include <iostream>
 #include "args.hpp"
 #include <iomanip>
 #include <sys/ioctl.h>
