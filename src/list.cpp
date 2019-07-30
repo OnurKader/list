@@ -341,11 +341,11 @@ int main(int argc, char **argv)
 	}
 
 	// If max_dir_length > term_width
-	if(long_filename && rows == 1)
+	if(long_filename && rows == 1U)
 		for(const File& item : dir)
 			std::cout << "    " << item.str(human_readable) << std::endl;
 	// Regular printing for multiple rows
-	else if (rows > 1)
+	else if (rows > 1U)
 	{
 		for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
 		{
