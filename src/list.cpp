@@ -56,6 +56,8 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"C", "\ue61e "},
 	{"cc", "\ue61d "},
 	{"hpp", "\ue61d "},
+	{"h", "\ue61e "},
+	{"hh", "\ue61e "},
 	{"java", "\ue256 "},
 	{"Java", "\ue256 "},
 	{"class", "\ue256 "},
@@ -128,7 +130,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"lnk", "\ufab2"},
 	{"msi", "\ufab2"},
 	{"exe", "\ufab2"},
-	{"sys", "\ufab2"},
+	{"sys", "\ue712 "},
 	{"temp", "\uf651 "},
 	{"tmp", "\uf651 "},
 	{"bin", "\uf114 "},
@@ -310,7 +312,7 @@ int main(int argc, char **argv)
 	// Empty Directory
 	if (dir.size() == 0U)
 	{
-		std::cout << "    " << Color(228, 195, 39) << "Nothing to show here..." << RESET << std::endl;
+		std::cout << "    " << Color(229, 195, 38) << "Nothing to show here..." << RESET << std::endl;
 		return 0;
 	}
 
@@ -328,9 +330,9 @@ int main(int argc, char **argv)
 	unsigned int total_length = 4U;
 	for (const File &item : dir)
 	{
-		// 6U because of the file icon and the space after it
+		// 7U because of the file icon and the space after it and the occasional '/'
 		// My rows & cols counting sucks so I do an extra check for one row cases
-		total_length += item.length() + 6U;
+		total_length += item.length() + 7U;
 		if (total_length >= term_width)
 		{
 			++rows;
@@ -338,9 +340,11 @@ int main(int argc, char **argv)
 		}
 	}
 
+	// If max_dir_length > term_width
 	if(long_filename && rows == 1)
 		for(const File& item : dir)
 			std::cout << "    " << item.str(human_readable) << std::endl;
+	// Regular printing for multiple rows
 	else if (rows > 1)
 	{
 		for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
@@ -360,9 +364,9 @@ int main(int argc, char **argv)
 			std::cout << std::endl;
 		}
 	}
+	// Single Row
 	else
 	{
-		// Single Row
 		std::cout << "    ";
 		for (const File &item : dir)
 			std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
@@ -371,3 +375,4 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
