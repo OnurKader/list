@@ -1,50 +1,50 @@
 #include <iostream>
 #include "args.hpp"
 #include <iomanip>
-#include <algorithm>
 #include <sys/ioctl.h>
+#include <algorithm>
 #include <filesystem>
 
 class Color
 {
-private:
-	uint8_t r, g, b;
+	private:
+		uint8_t r, g, b;
 
-	friend std::ostream &operator<<(std::ostream &os, const Color &color)
-	{
-		char buffer[32];
-		sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
-		os << buffer;
-		return os;
-	}
+		friend std::ostream &operator<<(std::ostream &os, const Color &color)
+		{
+			char buffer[32];
+			sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
+			os << buffer;
+			return os;
+		}
 
-public:
-	const std::string str() const
-	{
-		char buffer[32];
-		sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
-		return std::string(buffer);
-	}
+	public:
+		const std::string str() const
+		{
+			char buffer[32];
+			sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
+			return std::string(buffer);
+		}
 
-	Color() : r(0), g(0), b(0) {}
-	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
-	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+		Color() : r(0), g(0), b(0) {}
+		explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
+		explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 
 // COMMON COLORS
 const static std::string RESET = "\033[m",
-						 BLACK = "\033[38;2;0;0;0m",
-						 WHITE = "\033[38;2;255;255;255m",
-						 RED = "\033[38;2;255;0;0m",
-						 GREEN = "\033[38;2;0;255;0m",
-						 BUE = "\033[38;2;0;0;255m",
-						 YELLOW = "\033[38;2;255;255;0m",
-						 MAGENTA = "\033[38;2;255;0;255m",
-						 CYAN = "\033[38;0;2;255;255m",
-						 PURPE = "\033[38;2;127;32;183m",
-						 LIME = "\033[38;2;111;255;8m",
-						 BROWN = "\033[38;2;142;69;23m",
-						 ORANGE = "\033[38;2;255;127;8m";
+	  BLACK = "\033[38;2;0;0;0m",
+	  WHITE = "\033[38;2;255;255;255m",
+	  RED = "\033[38;2;255;0;0m",
+	  GREEN = "\033[38;2;0;255;0m",
+	  BUE = "\033[38;2;0;0;255m",
+	  YELLOW = "\033[38;2;255;255;0m",
+	  MAGENTA = "\033[38;2;255;0;255m",
+	  CYAN = "\033[38;0;2;255;255m",
+	  PURPE = "\033[38;2;127;32;183m",
+	  LIME = "\033[38;2;111;255;8m",
+	  BROWN = "\033[38;2;142;69;23m",
+	  ORANGE = "\033[38;2;255;127;8m";
 
 // Icon lookup map
 const static std::unordered_map<std::string, std::string> icons = {
@@ -56,6 +56,8 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"C", "\ue61e "},
 	{"cc", "\ue61d "},
 	{"hpp", "\ue61d "},
+	{"h", "\ue61e "},
+	{"hh", "\ue61e "},
 	{"java", "\ue256 "},
 	{"Java", "\ue256 "},
 	{"class", "\ue256 "},
@@ -128,7 +130,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"lnk", "\ufab2"},
 	{"msi", "\ufab2"},
 	{"exe", "\ufab2"},
-	{"sys", "\ufab2"},
+	{"sys", "\ue712 "},
 	{"temp", "\uf651 "},
 	{"tmp", "\uf651 "},
 	{"bin", "\uf114 "},
@@ -259,6 +261,7 @@ inline unsigned short getWidth()
 
 int main(int argc, char **argv)
 {
+<<<<<<< HEAD
 
 	// Get the arguments and convert them to appropriate strings, differentiate -x, --xxx, xxx
 	Args arg_parser(argc, argv);
@@ -267,6 +270,17 @@ int main(int argc, char **argv)
 	// The vector in which the files and directories are stored
 	std::vector<File> dir;
 	dir.reserve(64U);
+=======
+	// Parse the arguments
+	Args arg_parser(argc, argv);
+	arg_parser.convert();
+
+	std::vector<File> dir;
+	dir.reserve(32U);
+	const bool show_all = arg_parser.optExists("-a"),
+		  show_list = arg_parser.optExists("-l"),
+		  human_readable = arg_parser.optExists("-h");
+>>>>>>> fixme
 
 	// Specific options, maybe just use a 3rd Party header
 	bool show_all = arg_parser.optExists("a"),
@@ -281,19 +295,27 @@ int main(int argc, char **argv)
 			break;
 		}
 
-	// FIXME `la a (ls -a a)` doesn't give an error while `ls a` does???
-	// FIXME `la Comics` when terminal width < max_dir_length throws a floating point exception?
-
+<<<<<<< HEAD
 	// If the directory doesn't exist, print a message and `return 3`
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
 		std::cerr << "\033[1;31m"
 				  << "Directory Not Found." << RESET << std::endl;
-		return 3;
+		return 0;
 	}
 
 	unsigned int max_dir_length = 0U;
 
+=======
+	if (!std::filesystem::exists(std::filesystem::path(directory)))
+	{
+		std::cout << "    \033[1;31m"
+			<< "Directory Not Found. " << RESET << std::endl;
+		return 3;
+	}
+
+	// Push Files into dir Vector, if -a isn't specified don't put dotfiles in
+>>>>>>> fixme
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string &path = entry.path();
@@ -315,11 +337,19 @@ int main(int argc, char **argv)
 			max_dir_length = file.length();
 	}
 
+<<<<<<< HEAD
 	// If the directory is empty
 	if (dir.size() == 0)
 	{
 		std::cout << Color(229, 194, 37) << "Nothing to show here..." << RESET << std::endl;
 		return 3; // Maybe return 0, nothing went wrong...
+=======
+	// Empty Directory
+	if (dir.size() == 0U)
+	{
+		std::cout << "    " << Color(229, 195, 38) << "Nothing to show here..." << RESET << std::endl;
+		return 0;
+>>>>>>> fixme
 	}
 
 	// Sort Directories Alphabetically
@@ -330,12 +360,22 @@ int main(int argc, char **argv)
 	// Find the number of columns and rows to display in the Terminal
 	const unsigned short term_width = getWidth();
 	const unsigned short cols = term_width / (max_dir_length + 8U);
+<<<<<<< HEAD
 	unsigned short rows = dir.size() / cols;
 
 	unsigned int total_length = 6U;
+=======
+
+	// Determine if every file/dir name combined with spaces can fit in a single row
+	const bool long_filename = cols == 0U;
+	unsigned short rows = long_filename ? 0U : dir.size() / cols;
+	unsigned int total_length = 4U;
+>>>>>>> fixme
 	for (const File &item : dir)
 	{
-		total_length += item.length() + 6U;
+		// 7U because of the file icon and the space after it and the occasional '/'
+		// My rows & cols counting sucks so I do an extra check for one row cases
+		total_length += item.length() + 7U;
 		if (total_length >= term_width)
 		{
 			++rows;
@@ -343,7 +383,12 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (rows > 1)
+	// If max_dir_length > term_width
+	if(long_filename && rows == 1)
+		for(const File& item : dir)
+			std::cout << "    " << item.str(human_readable) << std::endl;
+	// Regular printing for multiple rows
+	else if (rows > 1)
 	{
 		// If the maximum file length doesn't fit the terminal, print each file on a new line
 		if (max_dir_length >= term_width)
@@ -363,15 +408,31 @@ int main(int argc, char **argv)
 			for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
 				std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
 		}
+<<<<<<< HEAD
+=======
+		if (dir.size() % cols != 0)
+		{
+			// If there are any files on the last row
+			std::cout << "    ";
+			for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
+				std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
+			std::cout << std::endl;
+		}
+>>>>>>> fixme
 	}
+	// Single Row
 	else
 	{
 		// Single Row Printing
 		std::cout << "    ";
 		for (const File &item : dir)
 			std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
+<<<<<<< HEAD
+=======
+		std::cout << std::endl;
+>>>>>>> fixme
 	}
-	std::cout << std::endl;
 
 	return 0;
 }
+
