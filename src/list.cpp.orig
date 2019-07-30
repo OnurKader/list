@@ -358,11 +358,11 @@ int main(int argc, char **argv)
 	}
 
 	// If max_dir_length > term_width
-	if(long_filename && rows == 1U)
+	if(long_filename && rows == 1)
 		for(const File& item : dir)
 			std::cout << "    " << item.str(human_readable) << std::endl;
 	// Regular printing for multiple rows
-	else if (rows > 1U)
+	else if (rows > 1)
 	{
 		// If the maximum file length doesn't fit the terminal, print each file on a new line
 		if (max_dir_length >= term_width)
