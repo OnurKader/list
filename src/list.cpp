@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <sys/ioctl.h>
+#include <chrono>
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
@@ -53,7 +54,7 @@ const static std::string RESET = "\033[m",
 // Human Readable File Sizes
 std::string humane(const uint64_t &size)
 {
-	char buff[8];
+	char buff[12];
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
 	if (kilo)
 		sprintf(buff, "%lu%c", giga ? size / 1000000000U : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
@@ -111,7 +112,10 @@ struct File
 
 	std::string inline size(const bool &human_readable = false) const
 	{
-		return (human_readable ? humane(this->_size) : std::to_string(this->_size));
+		if (this->isDir)
+			return (human_readable ? humane(4096) : std::to_string(4096));
+		else
+			return (human_readable ? humane(this->_size) : std::to_string(this->_size));
 	}
 
 	bool operator<(const File &file) const
@@ -221,16 +225,18 @@ int main(int argc, char **argv)
 	const bool long_filename = cols == 0U;
 	unsigned short rows = long_filename ? 0U : dir.size() / cols;
 	unsigned int total_length = 4U;
+	uint64_t largest_size = dir[0]._size;
 	for (const File &item : dir)
 	{
 		// 7U because of the file icon and the space after it and the occasional '/'
 		// My rows & cols counting sucks so I do an extra check for one row cases
 		total_length += item.length() + 7U;
+
+		if (item._size > largest_size)
+			largest_size = item._size;
+
 		if (total_length >= term_width)
-		{
 			++rows;
-			break;
-		}
 	}
 
 	/// PRINTING
@@ -240,12 +246,14 @@ int main(int argc, char **argv)
 		{
 			struct passwd *pw = getpwuid(geteuid());
 			struct group *gr = getgrgid(getegid());
+			const std::string &size = item.size(human_readable);
 
-			std::cout << "    " << item.getPerms() << (pw == 0 ? (RED + "ERROR  " + RESET) : (pw->pw_name + RESET + "  "))
-					  << (gr == 0 ? (RED + "ERROR  " + RESET) : (Color(195, 188, 84).str() + gr->gr_name + RESET + "  "))
-					  << item.size(human_readable)
-					  << std::right << std::setw(6 - item.size(human_readable).length()) << ' '
-					  << item.str() << std::endl;
+			std::cout
+				<< "    " << item.getPerms() << (pw == 0 ? (RED + "ERROR  " + RESET) : (pw->pw_name + RESET + "  "))
+				<< (gr == 0 ? (RED + "ERROR  " + RESET) : (Color(195, 188, 84).str() + gr->gr_name + RESET + "  "))
+				<< std::right << std::setw((human_readable ? 4 : std::to_string(largest_size).length()) - size.length() + 1) << ' '
+				<< size << "  "
+				<< item.str() << std::endl;
 		}
 	}
 	else
