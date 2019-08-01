@@ -1,9 +1,12 @@
 #include <iostream>
-#include "args.hpp"
-#include <iomanip>
-#include <sys/ioctl.h>
-#include <algorithm>
 #include <filesystem>
+#include <iomanip>
+#include <algorithm>
+#include <sys/ioctl.h>
+#include <pwd.h>
+#include <grp.h>
+#include <unistd.h>
+#include "args.hpp"
 #include "icons.cpp"
 
 class Color
@@ -47,191 +50,54 @@ const static std::string RESET = "\033[m",
 						 BROWN = "\033[38;2;142;69;23m",
 						 ORANGE = "\033[38;2;255;127;8m";
 
-// Icon lookup map
-/* const static std::unordered_map<std::string, std::string> icons = {
-	// Programming
-	{"cpp", "\ue61d "},
-	{"c++", "\ue61d "},
-	{"C++", "\ue61d "},
-	{"c", "\ue61e "},
-	{"C", "\ue61e "},
-	{"cc", "\ue61d "},
-	{"hpp", "\ue61d "},
-	{"h", "\ue61e "},
-	{"hh", "\ue61e "},
-	{"java", "\ue256 "},
-	{"Java", "\ue256 "},
-	{"class", "\ue256 "},
-	{"jar", "\ue256 "},
-	{"cs", "\uf81a "},
-	{"c#", "\uf81a "},
-	{"C#", "\uf81a "},
-	{"sh", "\uf977"},
-	{"py", "\ue235 "},
-	{"python", "\ue235 "},
-	{"Python", "\ue235 "},
-	{"pyc", "\ue73c "},
-	{"php", "\uf81e "},
-	{"htm", "\ue60e "},
-	{"html", "\ue736 "},
-	{"css", "\ue749 "},
-	{"js", "\ue74e "},
-	{"ts", "\ue628 "},
-	{"vscode", "\ufb0f "},
-	{"code", "\ufb0f "},
-	{"json", "\ue60b "},
-	{"src", "\uf121 "},
-	// Vim
-	{"vim", "\ue62b "},
-	{"nvim", "\ue62b "},
-	{"vimrc", "\ue62b "},
-	// Audio
-	{"midi", "\uf886 "},
-	{"mid", "\uf886 "},
-	{"mp3", "\ufc58 "},
-	{"ogg", "\uf886 "},
-	{"mpa", "\ufc58 "},
-	{"wav", "\uf886 "},
-	{"wma", "\uf886 "},
-	// Video
-	{"avi", "\uf880 "},
-	{"h264", "\uf880 "},
-	{"m4v", "\uf880 "},
-	{"mkv", "\uf880 "},
-	{"mov", "\uf880 "},
-	{"mp4", "\uf880 "},
-	{"mpg", "\uf880 "},
-	{"mpeg", "\uf880 "},
-	{"wmv", "\uf880 "},
-	// Image
-	{"bmp", "\uf7e8 "},
-	{"gif", "\uf952 "},
-	{"jpg", "\uf03e "},
-	{"jpeg", "\uf03e "},
-	{"png", "\uf03e "},
-	{"ps", "\uf7ea "},
-	{"psd", "\ue7b8 "},
-	{"svg", "\ufc1f "},
-	{"tiff", "\ue60d "},
-	{"tif", "\ue60d "},
-	{"xcf", "\uf71e "},
-	// System Stuff
-	{"config", "\ue615 "},
-	{"conf", "\ue615 "},
-	{"zsh_history", "\uf7d9 "},
-	{"bashrc", "\ue615 "},
-	{"zshrc", "\ue615 "},
-	{"cfg", "\ue615 "},
-	{"bak", "\ue615 "},
-	{"dll", "\uf830 "},
-	{"ico", "\uf6f2 "},
-	{"icon", "\uf6f2 "},
-	{"icons", "\uf6f2 "},
-	{"ini", "\ue70f "},
-	{"lnk", "\ufab2"},
-	{"msi", "\ufab2"},
-	{"exe", "\ufab2"},
-	{"sys", "\ue712 "},
-	{"temp", "\uf651 "},
-	{"tmp", "\uf651 "},
-	{"bin", "\uf114 "},
-	{"log", "\uf89d "},
-	// Office Stuff
-	{"doc", "\uf72c "},
-	{"docx", "\uf72c "},
-	{"odt", "\uf72c "},
-	{"pdf", "\uf1c1 "},
-	{"rtf", "\uf15c"},
-	{"txt", "\uf0f6 "},
-	{"xls", "\uf1c3 "},
-	{"xlsx", "\uf1c3 "},
-	{"ods", "\uf1c3 "},
-	{"odp", "\uf1c4 "},
-	{"ppt", "\uf1c4 "},
-	{"pps", "\uf1c4 "},
-	{"pptx", "\uf1c4 "},
-	{"md", "\ue609 "},
-	{"latex", "\ue612 "},
-	{"tex", "\ue612 "},
-	// Archive & Compress
-	{"7z", "\uf1c6 "},
-	{"deb", "\uf306 "},
-	{"pkg", "\uf487 "},
-	{"rar", "\ufac3 "},
-	{"zip", "\uf1c6 "},
-	{"rpm", "\uf316 "},
-	{"tar", "\uf1c6 "},
-	{"gz", "\uf1c6 "},
-	{"bzip", "\uf066 "},
-	{"bz2", "\uf066 "},
-	{"bzip2", "\uf066 "},
-	{"z", "\uf1c6 "},
-	// Git
-	{"git", "\ue5fb "},
-	{"gitignore", "\uf1d3 "},
-	{"gitconfig", "\uf1d3 "},
-	{"HEAD", "\ue708 "},
-	{"FETCH_HEAD", "\ue708 "},
-	{"ORIG_HEAD", "\ue708 "},
-	{"hooks", "\ufbe0 "},
-	{"branches", "\ue725 "},
-	// Games
-	{"steam", "\uf9d2"},
-	{"minecraft", "\uf872 "},
-	{"Minecraft", "\uf872 "},
-	{"Team Fortress 2", "\uf1b7 "}
-
-};*/
-
 // Human Readable File Sizes
 std::string humane(const uint64_t &size)
 {
 	char buff[8];
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
 	if (kilo)
-		sprintf(buff, "%.2f%c", giga ? (float)size / 1E9f : (mega ? (float)size / 1E6f : (kilo ? (float)size / 1E3f : (float)size)),
+		sprintf(buff, "%lu%c", giga ? size / 1000000000U : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
 				giga ? 'G' : mega ? 'M' : kilo ? 'K' : 'B');
 	else
-		sprintf(buff, "%ld", size);
+		sprintf(buff, "%luB", size);
 
 	return std::string(buff);
 }
 
 struct File
 {
-	std::string name, icon;
+	std::string name, short_name, icon;
 	bool isDir;
-	uint64_t size;
+	uint64_t _size;
 
-	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file.substr(index)), icon("\uf15b "), isDir(dir), size(size) { this->findIcon(); }
+	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file), short_name(file.substr(index)), icon("\uf15b "), isDir(dir), _size(size) { this->findIcon(); }
 
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
 	{
 		if (file.isDir)
-			os << Color(21, 162, 252) << (file.icon == "\uf15b " ? "\ue5fe " : file.icon) << file.name << '/' << RESET;
+			os << Color(21, 162, 252) << (file.icon == "\uf15b " ? "\ue5fe " : file.icon) << file.short_name << '/' << RESET;
 		else
-			os << GREEN << file.icon << file.name << RESET << ' ';
+			os << GREEN << file.icon << file.short_name << RESET << ' ';
 		return os;
 	}
 
-	std::string str(bool human_read = false) const
+	std::string str() const
 	{
 		std::string temp = "";
 		if (this->isDir)
-			temp += Color(21, 162, 252).str() + (this->icon == "\uf15b " ? "\ue5fe " : this->icon) + this->name + '/' + RESET;
+			temp += Color(21, 162, 252).str() + (this->icon == "\uf15b " ? "\ue5fe " : this->icon) + this->short_name + '/' + RESET;
 		else
-			// temp += GREEN + this->icon + this->name + ' ' + (human_read ? humane(this->size) : std::to_string(this->size)) + RESET;
-			temp += GREEN + this->icon + this->name + RESET + ' ';
+			temp += GREEN + this->icon + this->short_name + RESET + ' ';
 
 		return temp;
 	}
 
 	std::string inline getExtension() const
 	{
-		if (this->name.find('.') != std::string::npos)
-			return this->name.substr(this->name.rfind('.') + 1);
+		if (this->short_name.find('.') != std::string::npos)
+			return this->short_name.substr(this->short_name.rfind('.') + 1);
 		else
-			return this->name;
+			return this->short_name;
 	}
 
 	void findIcon()
@@ -241,7 +107,12 @@ struct File
 			this->icon = icons.at(extension);
 	}
 
-	unsigned long length() const { return name.size(); }
+	unsigned long length() const { return short_name.size(); }
+
+	std::string inline size(const bool &human_readable = false) const
+	{
+		return (human_readable ? humane(this->_size) : std::to_string(this->_size));
+	}
 
 	bool operator<(const File &file) const
 	{
@@ -249,7 +120,25 @@ struct File
 			return false;
 		else if (this->isDir && !file.isDir)
 			return true;
-		return (this->name < file.name);
+		return (this->short_name < file.short_name);
+	}
+
+	std::string getPerms() const
+	{
+		namespace fs = std::filesystem;
+		std::stringstream permissions;
+		fs::perms p(std::filesystem::status(this->name).permissions());
+		permissions << ((p & fs::perms::owner_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::owner_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::owner_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::group_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::group_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::group_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::others_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::others_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::others_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
+					<< RESET << "  ";
+		return permissions.str();
 	}
 };
 
@@ -267,9 +156,9 @@ int main(int argc, char **argv)
 	arg_parser.convert();
 
 	std::vector<File> dir;
-	dir.reserve(32U);
+	dir.reserve(16U);
 	const bool show_all = arg_parser.optExists("-a"),
-			   show_list = arg_parser.optExists("-l"),
+			   long_list = arg_parser.optExists("-l"),
 			   human_readable = arg_parser.optExists("-h");
 
 	std::string directory(".");
@@ -279,6 +168,7 @@ int main(int argc, char **argv)
 			directory = item.second.name;
 			break;
 		}
+
 	// If the directory doesn't exist, print a message and `return 3`
 	unsigned int max_dir_length = 0U;
 
@@ -300,7 +190,7 @@ int main(int argc, char **argv)
 			dir.push_back(file);
 		else
 		{
-			if (file.name.front() == '.')
+			if (file.short_name.front() == '.')
 				continue;
 			else
 				dir.push_back(file);
@@ -343,44 +233,62 @@ int main(int argc, char **argv)
 		}
 	}
 
-	// If max_dir_length > term_width
-	if (long_filename && rows == 1U)
-		for (const File &item : dir)
-			std::cout << "    " << item.str(human_readable) << std::endl;
-	// Regular printing for multiple rows
-	else if (rows > 1U)
+	/// PRINTING
+	if (long_list) // -l option
 	{
-		// If the maximum file length doesn't fit the terminal, print each file on a new line
-		if (max_dir_length >= term_width)
-			for (const File &item : dir)
-				std::cout << item.str(human_readable) << std::endl;
-		else
+		for (const File &item : dir)
 		{
-			for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
-			{
-				std::cout << "    ";
-				for (size_t n = 0U; n < cols; n++)
-					if (i + n != dir.size())
-						std::cout << dir[i + n].str(human_readable) << std::left << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
-				std::cout << std::endl;
-			}
-			if (dir.size() % cols > 0)
-			{
-				std::cout << "    ";
-				for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
-					std::cout << dir[i].str(human_readable) << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
-				std::cout << std::endl;
-			}
+			struct passwd *pw = getpwuid(geteuid());
+			struct group *gr = getgrgid(getegid());
+
+			std::cout << "    " << item.getPerms() << (pw == 0 ? (RED + "ERROR  " + RESET) : (pw->pw_name + RESET + "  "))
+					  << (gr == 0 ? (RED + "ERROR  " + RESET) : (Color(195, 188, 84).str() + gr->gr_name + RESET + "  "))
+					  << item.size(human_readable)
+					  << std::right << std::setw(6 - item.size(human_readable).length()) << ' '
+					  << item.str() << std::endl;
 		}
 	}
-	// Single Row
 	else
 	{
-		// Single Row Printing
-		std::cout << "    ";
-		for (const File &item : dir)
-			std::cout << item.str(human_readable) << std::left << std::setw(4U) << ' ';
-		std::cout << std::endl;
+		// If max_dir_length > term_width
+		if (long_filename && rows == 1U)
+			for (const File &item : dir)
+				std::cout << "    " << item.str() << std::endl;
+		// Regular printing for multiple rows
+		else if (rows > 1U)
+		{
+			// If the maximum file length doesn't fit the terminal, print each file on a new line
+			if (max_dir_length >= term_width)
+				for (const File &item : dir)
+					std::cout << item.str() << std::endl;
+			else
+			{
+				for (size_t i = 0U; i < dir.size() - (dir.size() % cols); i += (cols))
+				{
+					std::cout << "    ";
+					for (size_t n = 0U; n < cols; n++)
+						if (i + n != dir.size())
+							std::cout << dir[i + n].str() << std::left << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
+					std::cout << std::endl;
+				}
+				if (dir.size() % cols > 0)
+				{
+					std::cout << "    ";
+					for (size_t i = dir.size() - (dir.size() % cols); i < dir.size(); ++i)
+						std::cout << dir[i].str() << std::left << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
+					std::cout << std::endl;
+				}
+			}
+		}
+		// Single Row
+		else
+		{
+			// Single Row Printing
+			std::cout << "    ";
+			for (const File &item : dir)
+				std::cout << item.str() << std::left << std::setw(4U) << ' ';
+			std::cout << std::endl;
+		}
 	}
 
 	return 0;

@@ -73,6 +73,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"zsh_history", "\uf7d9 "},
 	{"bashrc", "\ue615 "},
 	{"zshrc", "\ue615 "},
+	{"zsh", "\ue615 "},
 	{"cfg", "\ue615 "},
 	{"bak", "\ue615 "},
 	{"dll", "\uf830 "},
@@ -131,5 +132,4 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"steam", "\uf9d2"},
 	{"minecraft", "\uf872 "},
 	{"Minecraft", "\uf872 "},
-	{"Team Fortress 2", "\uf1b7 "}
-};
+	{"Team Fortress 2", "\uf1b7 "}};
