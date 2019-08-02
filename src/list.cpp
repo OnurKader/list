@@ -1,9 +1,11 @@
 #include <iostream>
 #include <filesystem>
 #include <iomanip>
+#include <ctime>
+/* #include <chrono> */
 #include <algorithm>
 #include <sys/ioctl.h>
-#include <chrono>
+#include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
@@ -12,49 +14,49 @@
 
 class Color
 {
-private:
-	uint8_t r, g, b;
+	private:
+		uint8_t r, g, b;
 
-	friend std::ostream &operator<<(std::ostream &os, const Color &color)
-	{
-		char buffer[32];
-		sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
-		os << buffer;
-		return os;
-	}
+		friend std::ostream &operator<<(std::ostream &os, const Color &color)
+		{
+			char buffer[32];
+			sprintf(buffer, "\033[38;2;%d;%d;%dm", color.r, color.g, color.b);
+			os << buffer;
+			return os;
+		}
 
-public:
-	const std::string str() const
-	{
-		char buffer[32];
-		sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
-		return std::string(buffer);
-	}
+	public:
+		const std::string str() const
+		{
+			char buffer[32];
+			sprintf(buffer, "\033[38;2;%d;%d;%dm", this->r, this->g, this->b);
+			return std::string(buffer);
+		}
 
-	Color() : r(0), g(0), b(0) {}
-	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
-	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+		Color() : r(0), g(0), b(0) {}
+		explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
+		explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 
 // COMMON COLORS
 const static std::string RESET = "\033[m",
-						 BLACK = "\033[38;2;0;0;0m",
-						 WHITE = "\033[38;2;255;255;255m",
-						 RED = "\033[38;2;255;0;0m",
-						 GREEN = "\033[38;2;0;255;0m",
-						 BUE = "\033[38;2;0;0;255m",
-						 YELLOW = "\033[38;2;255;255;0m",
-						 MAGENTA = "\033[38;2;255;0;255m",
-						 CYAN = "\033[38;0;2;255;255m",
-						 PURPE = "\033[38;2;127;32;183m",
-						 LIME = "\033[38;2;111;255;8m",
-						 BROWN = "\033[38;2;142;69;23m",
-						 ORANGE = "\033[38;2;255;127;8m";
+	  BLACK = "\033[38;2;0;0;0m",
+	  WHITE = "\033[38;2;255;255;255m",
+	  RED = "\033[38;2;255;0;0m",
+	  GREEN = "\033[38;2;0;255;0m",
+	  BUE = "\033[38;2;0;0;255m",
+	  YELLOW = "\033[38;2;255;255;0m",
+	  MAGENTA = "\033[38;2;255;0;255m",
+	  CYAN = "\033[38;0;2;255;255m",
+	  PURPLE = "\033[38;2;127;32;183m",
+	  LIME = "\033[38;2;111;255;8m",
+	  BROWN = "\033[38;2;142;69;23m",
+	  ORANGE = "\033[38;2;255;127;8m";
 
 // Human Readable File Sizes
 std::string humane(const uint64_t &size)
 {
-	char buff[12];
+	char buff[15U];
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
 	if (kilo)
 		sprintf(buff, "%lu%c", giga ? size / 1000000000U : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
@@ -72,6 +74,7 @@ struct File
 	uint64_t _size;
 
 	File(const std::string &file, unsigned long index, bool dir, uint64_t size) : name(file), short_name(file.substr(index)), icon("\uf15b "), isDir(dir), _size(size) { this->findIcon(); }
+	File(const std::string &file) : name(file) {}
 
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
 	{
@@ -133,17 +136,18 @@ struct File
 		std::stringstream permissions;
 		fs::perms p(std::filesystem::status(this->name).permissions());
 		permissions << ((p & fs::perms::owner_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::owner_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::owner_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::group_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::group_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::group_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::others_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::others_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::others_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
-					<< RESET << "  ";
+			<< ((p & fs::perms::owner_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::owner_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::group_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::group_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::group_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::others_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::others_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w") : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::others_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x") : (Color(88, 40, 128).str() + "-"))
+			<< RESET << "  ";
 		return permissions.str();
 	}
+
 };
 
 inline unsigned short getWidth()
@@ -162,8 +166,8 @@ int main(int argc, char **argv)
 	std::vector<File> dir;
 	dir.reserve(16U);
 	const bool show_all = arg_parser.optExists("-a"),
-			   long_list = arg_parser.optExists("-l"),
-			   human_readable = arg_parser.optExists("-h");
+		  long_list = arg_parser.optExists("-l"),
+		  human_readable = arg_parser.optExists("-h");
 
 	std::string directory(".");
 	for (const auto &item : arg_parser.getOpts())
@@ -179,7 +183,7 @@ int main(int argc, char **argv)
 	if (!std::filesystem::exists(std::filesystem::path(directory)))
 	{
 		std::cout << "    \033[1;31m"
-				  << "Directory Not Found. " << RESET << std::endl;
+			<< "Directory Not Found. " << RESET << std::endl;
 		return 3;
 	}
 
@@ -187,22 +191,27 @@ int main(int argc, char **argv)
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
 		const std::string &path = entry.path();
-		File file(path, path.rfind('/') + 1U, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0UL);
+		File* file;
+
+		if(entry.is_symlink() && std::filesystem::is_directory(std::filesystem::read_symlink(entry)))
+			file = new File(path, path.rfind('/') + 1U, entry.is_directory(), 4096UL);
+		else
+			file = new File(path, path.rfind('/') + 1U, entry.is_directory(), entry.is_regular_file() ? entry.file_size() : 0UL);
 
 		// Don't push .dotfiles in the vector if `-a` isn't specified
 		if (show_all) // -a
-			dir.push_back(file);
+			dir.push_back(*file);
 		else
 		{
-			if (file.short_name.front() == '.')
+			if (file->short_name.front() == '.')
 				continue;
 			else
-				dir.push_back(file);
+				dir.push_back(*file);
 		}
 
 		// Get the longest file/directory in the directory, to be used when spacing the columns
-		if (file.length() > max_dir_length)
-			max_dir_length = file.length();
+		if (file->length() > max_dir_length)
+			max_dir_length = file->length();
 	}
 
 	// Empty Directory
@@ -244,15 +253,27 @@ int main(int argc, char **argv)
 	{
 		for (const File &item : dir)
 		{
-			struct passwd *pw = getpwuid(geteuid());
-			struct group *gr = getgrgid(getegid());
 			const std::string &size = item.size(human_readable);
 
+			struct stat info;
+			stat(item.name.c_str(), &info);
+			struct passwd *pw = getpwuid(info.st_uid);
+			struct group *gr = getgrgid(info.st_gid);
+			std::string uname(pw->pw_name);
+			std::string group(gr->gr_name);
+			std::string m_time(ctime(&info.st_mtim.tv_sec));
+			m_time.erase(m_time.end()-1);
+			// TODO Add Color to Modify Time
+
 			std::cout
-				<< "    " << item.getPerms() << (pw == 0 ? (RED + "ERROR  " + RESET) : (pw->pw_name + RESET + "  "))
-				<< (gr == 0 ? (RED + "ERROR  " + RESET) : (Color(195, 188, 84).str() + gr->gr_name + RESET + "  "))
+				<< "    " << item.getPerms() << std::right
+				<< std::setw(std::string(getpwuid(geteuid())->pw_name).length() - uname.length() + 1) << ' '
+				<< (pw == 0 ? (RED + "ERROR  " + RESET) : (uname + RESET + "  "))
+				<< std::setw(std::string(getgrgid(geteuid())->gr_name).length() - group.length() + 1) << ' '
+				<< (gr == 0 ? (RED + "ERROR  " + RESET) : (Color(201, 192, 92).str() + group + RESET + "  "))
 				<< std::right << std::setw((human_readable ? 4 : std::to_string(largest_size).length()) - size.length() + 1) << ' '
-				<< size << "  "
+				<< size << "   "
+				<< Color(37, 111, 182).str() << m_time << RESET << "   "
 				<< item.str() << std::endl;
 		}
 	}

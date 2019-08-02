@@ -5,7 +5,7 @@ ___
 ##### Requierements
 1. _**gcc --version >= 8.0**_
 2. **C++17**
-3. *Linux* or _MacOS_ (Maybe)
+3. [*Linux*](*Linux*)
 
 ___
 
