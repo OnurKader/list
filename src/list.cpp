@@ -187,6 +187,7 @@ int main(int argc, char **argv)
 		return 3;
 	}
 
+	uint64_t largest_size = 1ULL;
 	// Push Files into dir Vector, if -a isn't specified don't put dotfiles in
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
@@ -212,12 +213,17 @@ int main(int argc, char **argv)
 		// Get the longest file/directory in the directory, to be used when spacing the columns
 		if (file->length() > max_dir_length)
 			max_dir_length = file->length();
+
+		if (file->_size > largest_size)
+			largest_size = file->_size;
+
+		delete file;
 	}
 
 	// Empty Directory
 	if (dir.size() == 0U)
 	{
-		std::cout << "    " << Color(229, 195, 38) << "Nothing to show here..." << RESET << std::endl;
+		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here..." << RESET << std::endl;
 		return 0;
 	}
 
@@ -234,18 +240,16 @@ int main(int argc, char **argv)
 	const bool long_filename = cols == 0U;
 	unsigned short rows = long_filename ? 0U : dir.size() / cols;
 	unsigned int total_length = 4U;
-	uint64_t largest_size = dir[0]._size;
 	for (const File &item : dir)
 	{
 		// 7U because of the file icon and the space after it and the occasional '/'
 		// My rows & cols counting sucks so I do an extra check for one row cases
 		total_length += item.length() + 7U;
 
-		if (item._size > largest_size)
-			largest_size = item._size;
-
-		if (total_length >= term_width)
+		if (total_length >= term_width){
 			++rows;
+			break;
+		}
 	}
 
 	/// PRINTING
@@ -263,7 +267,7 @@ int main(int argc, char **argv)
 			std::string group(gr->gr_name);
 			std::string m_time(ctime(&info.st_mtim.tv_sec));
 			m_time.erase(m_time.end()-1);
-			// TODO Add Color to Modify Time
+			// TODO Add Color to Modify Time & Size
 
 			std::cout
 				<< "    " << item.getPerms() << std::right
@@ -279,6 +283,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
+		/// REGULAR PRINTING
 		// If max_dir_length > term_width
 		if (long_filename && rows == 1U)
 			for (const File &item : dir)
