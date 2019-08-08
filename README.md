@@ -16,6 +16,7 @@ ___
 - [x] Fix Floating Point Exception when `term_width < file_width`
 - [x] Add A Makefile
 - [x] Put the long list of icons in another file
+- [ ] Add Usage (Flags)
 
 **Run `make` in the _'list'_ directory**
  (Doesn't write to root, so we don't need root privileges)

@@ -5,5 +5,5 @@ list:
 	mkdir -p ../bin && $(CC) -o ../bin/list ./list.cpp $(CFLAGS)
 
 clean:
-	rm ./list ../bin/list
+	rm ../bin/list
 

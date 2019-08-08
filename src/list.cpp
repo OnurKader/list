@@ -1,3 +1,4 @@
+// Includes
 #include <iostream>
 #include <filesystem>
 #include <iomanip>
@@ -11,10 +12,14 @@
 #include "args.hpp"
 #include "icons.cpp"
 
+// Defines
+#define DAY 86400U // Day in seconds
+#define HOUR 3600U // Hour in seconds
+
 class Color
 {
 private:
-	uint8_t r, g, b;
+	const uint8_t r, g, b;
 
 	friend std::ostream &operator<<(std::ostream &os, const Color &color)
 	{
@@ -55,7 +60,7 @@ const static std::string RESET = "\033[m",
 // Human Readable File Sizes
 std::string humane(const uint64_t &size)
 {
-	char buff[15U];
+	char buff[16U];
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
 	if (kilo)
 		sprintf(buff, "%lu%c", giga ? size / 1000000000U : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
@@ -64,6 +69,15 @@ std::string humane(const uint64_t &size)
 		sprintf(buff, "%luB", size);
 
 	return std::string(buff);
+}
+
+const std::string to_lower(const std::string &str)
+{
+	std::string temp = "";
+	for (const unsigned char &letter : str)
+		temp += (unsigned char)std::tolower(letter);
+
+	return temp;
 }
 
 struct File
@@ -122,11 +136,12 @@ struct File
 
 	bool operator<(const File &file) const
 	{
+		/*[](const File &a, const File &b) { return (to_lower(a.name) < to_lower(b.name)); } */
 		if (!this->isDir && file.isDir)
 			return false;
 		else if (this->isDir && !file.isDir)
 			return true;
-		return (this->short_name < file.short_name);
+		return (to_lower(this->short_name) < to_lower(file.short_name));
 	}
 
 	std::string getPerms() const
@@ -147,16 +162,6 @@ struct File
 		return permissions.str();
 	}
 };
-
-const std::string to_lower(const std::string &str)
-{
-	std::string temp = "";
-	for (const unsigned char &letter : str)
-	{
-		temp += (unsigned char)std::tolower(letter);
-	}
-	return temp;
-}
 
 inline unsigned short getWidth()
 {
@@ -199,8 +204,8 @@ int main(int argc, char **argv)
 	// Push Files into dir Vector, if -a isn't specified don't put dotfiles in
 	for (const auto &entry : std::filesystem::directory_iterator(directory))
 	{
-		const std::string &path = entry.path();
 		File *file;
+		const std::string &path = entry.path();
 
 		if (entry.is_symlink() && std::filesystem::is_directory(std::filesystem::read_symlink(entry)))
 			file = new File(path, path.rfind('/') + 1U, entry.is_directory(), 4096UL);
@@ -231,14 +236,15 @@ int main(int argc, char **argv)
 	// Empty Directory
 	if (dir.size() == 0U)
 	{
-		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here..." << RESET << std::endl;
+		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here...\n"
+				  << RESET;
 		return 0;
 	}
 
 	// Sort Directories Alphabetically
 	// .dotfolders first, 'CAPITAL' and 'lower' mixed
 	// Dirs before Files
-	std::sort(dir.begin(), dir.end(), [](const File &a, const File &b) { return (to_lower(a.name) < to_lower(b.name)); });
+	std::sort(dir.begin(), dir.end());
 
 	// Find the number of columns and rows to display in the Terminal
 	const unsigned short term_width = getWidth();
@@ -272,21 +278,48 @@ int main(int argc, char **argv)
 			stat(item.name.c_str(), &info);
 			struct passwd *pw = getpwuid(info.st_uid);
 			struct group *gr = getgrgid(info.st_gid);
-			std::string uname(pw->pw_name);
-			std::string group(gr->gr_name);
-			std::string m_time(ctime(&info.st_mtim.tv_sec));
-			m_time.erase(m_time.end() - 1);
-			// TODO Add Color to Modify Time & Size
+			std::string uname(pw->pw_name);			  // Owner-User
+			std::string group(gr->gr_name);			  // Owner-Group
+			std::time_t modify = info.st_mtim.tv_sec; // Last Modified Time
+			std::time_t now = std::time(NULL);
+			std::string m_time(ctime(&modify)); // Convert time_t into a prettier string equivelant
+			m_time.erase(m_time.end() - 1);		// Get rid of the last '\n'
+
+			// Set the color of the Modification Time, 3 Days -> 1 Day -> 6 Hours -> 1 Hour
+			std::time_t diff = now - modify;
+			std::string time_color;
+			if (diff > 3 * DAY)
+				time_color = Color(42, 141, 175).str();
+			else if (diff > DAY && diff < 3 * DAY)
+				time_color = Color(68, 166, 234).str();
+			else if (diff < DAY && diff > 6 * HOUR)
+				time_color = Color(142, 200, 200).str();
+			else if (diff < 6 * HOUR && diff > HOUR)
+				time_color = Color(144, 222, 107).str();
+			else
+				time_color = GREEN;
+
+			std::string size_color;
+			if (item._size < 1000000ULL) // item < 1 MB
+				size_color = WHITE;
+			else if (item._size < 128000000ULL) // item < 128 MB
+				size_color = YELLOW;
+			else if (item._size < 512000000ULL) // item < 512 MB
+				size_color = Color(143, 250, 218).str();
+			else if (item._size < 1000000000ULL) // item < 1 GB
+				size_color = Color(80, 255, 228).str();
+			else
+				size_color = Color(28, 255, 254).str();
 
 			std::cout
 				<< "    " << item.getPerms() << std::right
 				<< std::setw(std::string(getpwuid(geteuid())->pw_name).length() - uname.length() + 1) << ' '
 				<< (pw == 0 ? (RED + "ERROR " + RESET) : (uname + RESET + ' '))
 				<< std::setw(std::string(getgrgid(geteuid())->gr_name).length() - group.length() + 1) << ' '
-				<< (gr == 0 ? (RED + "ERROR " + RESET) : (Color(201, 192, 92).str() + group + RESET + ' '))
+				<< (gr == 0 ? (RED + "ERROR " + RESET) : (Color(205, 196, 101).str() + group + RESET + ' '))
 				<< std::right << std::setw((human_readable ? 4 : std::to_string(largest_size).length()) - size.length() + 1) << ' '
-				<< size << "  "
-				<< Color(37, 111, 182).str() << m_time << RESET << "   "
+				<< size_color << size << "  " << RESET
+				<< time_color << m_time << RESET << "   "
 				<< item.str() << std::endl;
 		}
 	}
