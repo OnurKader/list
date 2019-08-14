@@ -121,7 +121,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"deb", "\uf306 "},
 	{"gz", "\uf1c6 "},
 	{"pkg", "\uf487 "},
-	{"rar", "\ufac3 "},
+	{"rar", "\ufac3"},
 	{"rpm", "\uf316 "},
 	{"tar", "\uf1c6 "},
 	{"z", "\uf1c6 "},
