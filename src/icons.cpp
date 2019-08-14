@@ -1,6 +1,6 @@
 #include <unordered_map>
 
-// TODO - ADD: webm, emacs, Android, Pictures, Videos, Music, Comics, script, scripts, wine, atom, eclipse, font, fonts
+// TODO - ADD: webm, emacs, Android, Pictures, Videos, Music, Comics, script, scripts, wine, atom, eclipse, font, fonts, yaml, mk, o, yml, info
 
 const static std::unordered_map<std::string, std::string> icons = {
 	// Programming
