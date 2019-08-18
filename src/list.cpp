@@ -1,3 +1,6 @@
+// TODO Change File Class to hold fs::path, add better symlink support, show symlinks with a different color, greenish for dirs orangish for files. and add an '@' maybe?
+// TODO Follow symlink and show where it goes
+
 // Includes
 #include <grp.h>
 #include <pwd.h>
@@ -106,9 +109,7 @@ struct File {
 	std::string str() const {
 		std::string temp = "";
 		if (this->isDir)
-			temp += Color(21, 162, 252).str() +
-				(this->icon == "\uf15b " ? "\ue5fe " : this->icon) +
-				this->short_name + '/' + RESET;
+			temp += Color(20, 162, 254).str() + (this->icon == "\uf15b " ? "\ue5fe " : this->icon) + this->short_name + '/' + RESET;
 		else
 			temp += GREEN + this->icon + this->short_name + RESET + ' ';
 
