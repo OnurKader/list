@@ -15,7 +15,7 @@ struct Option
 		double_dashed
 	} mode;
 
-	Option() : name("NaN"), mode(str) {}
+	Option() : name(""), mode(str) {}
 	explicit Option(const std::string &name) : name(name), mode(str) {}
 };
 
@@ -38,8 +38,6 @@ public:
 	void convert();
 };
 
-#endif
-
 Args::Args(int &argc, char **argv) : name(std::string(argv[0]).substr(std::string(argv[0]).rfind('/') + 1))
 {
 	for (size_t i = 0; i < (unsigned)argc; ++i)
@@ -57,7 +55,7 @@ std::vector<std::string> Args::getArgs() const { return arguments; }
 // Push the given option, --xxx | -x | x, into the options map
 void Args::parseOpt(const std::string &option)
 {
-	// Add --'color'=auto, now it's just --'color=auto'
+	// TODO Add --'color'=auto, now it's just --'color=auto'
 	if (option[0] == '-' && option[1] == '-') // Double Dash
 	{
 		Option *temp = new Option(option);
@@ -95,3 +93,5 @@ void Args::convert()
 	for (const std::string &temp : arguments)
 		parseOpt(temp);
 }
+
+#endif

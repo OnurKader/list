@@ -5,7 +5,7 @@ list:
 	mkdir -p ../bin && $(CC) -o ../bin/list ./list.cpp $(CFLAGS)
 
 install:
-	sudo cp ../bin/list /usr/bin/list -psi
+	sudo ln -sf ~/Peki/C++/Projects/bin/list /usr/bin/list
 
 clean:
 	rm ../bin/list

@@ -1,5 +1,6 @@
 // TODO Change File Class to hold fs::path, add better symlink support, show symlinks with a different color, greenish for dirs orangish for files. and add an '@' maybe?
-// TODO Follow symlink and show where it goes
+// TODO Follow symlink and show where it goes in ls -l
+// TODO If the input directory is a file, just print the file
 
 // Includes
 #include <grp.h>
@@ -193,6 +194,7 @@ inline unsigned short getWidth() {
 
 int main(int argc, char **argv) {
 	// Parse the arguments
+	std::ios_base::sync_with_stdio(false);
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
 

@@ -1,9 +1,12 @@
 #include <unordered_map>
 
-// TODO - ADD: webm, emacs, Android, Pictures, Videos, Music, Comics, script, scripts, wine, atom, eclipse, font, fonts, yaml, mk, o, yml, info
+// TODO - ADD:script, scripts, font, fonts, info, WINE
 
 const static std::unordered_map<std::string, std::string> icons = {
 	// Programming
+	{"Android", "\ue70e"},
+	{"android", "\ue70e"},
+	{"atom", "\ue764"},
 	{"C", "\ue61e "},
 	{"C#", "\uf81a "},
 	{"C++", "\ue61d "},
@@ -18,6 +21,8 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"cpp", "\ue61d "},
 	{"cs", "\uf81a "},
 	{"css", "\ue749 "},
+	{"Eclipse", "\ue79e "},
+	{"eclipse", "\ue79e "},
 	{"h", "\ue61e "},
 	{"hh", "\ue61e "},
 	{"hpp", "\ue61d "},
@@ -30,6 +35,9 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"Makefile", "\ue615 "},
 	{"makefile", "\ue615 "},
 	{"make", "\ue615 "},
+	{"mk", "\ue615 "},
+	{"o", "\ufc0c "},
+	{"out", "\ufc0c "},
 	{"php", "\uf81e "},
 	{"py", "\ue235 "},
 	{"pyc", "\ue73c "},
@@ -38,17 +46,22 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"src", "\uf121 "},
 	{"ts", "\ue628 "},
 	{"tags", "\uf02b "},
+	{"yaml", "\ue73e "},
+	{"yml", "\ue73e "},
 	{"vscode", "\ufb0f "},
 	// Vim
 	{"nvim", "\ue62b "},
 	{"vi", "\ue62b "},
 	{"vim", "\ue62b "},
 	{"vimrc", "\ue62b "},
+	// Shh
+	{"emacs", "\uf044 "},
 	// Audio
 	{"mid", "\uf886 "},
 	{"midi", "\uf886 "},
 	{"mp3", "\ufc58 "},
 	{"mpa", "\ufc58 "},
+	{"Music", "\ufc58 "},
 	{"ogg", "\uf886 "},
 	{"wav", "\uf886 "},
 	{"wma", "\uf886 "},
@@ -61,6 +74,8 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"mp4", "\uf880 "},
 	{"mpeg", "\uf880 "},
 	{"mpg", "\uf880 "},
+	{"Videos", "\uf880 "},
+	{"webm", "\ufa66"},
 	{"wmv", "\uf880 "},
 	// Image
 	{"bmp", "\uf7e8 "},
@@ -68,6 +83,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"jpg", "\uf03e "},
 	{"jpeg", "\uf03e "},
 	{"png", "\uf03e "},
+	{"Pictures", "\uf03e "},
 	{"ps", "\uf7ea "},
 	{"psd", "\ue7b8 "},
 	{"svg", "\ufc1f "},
@@ -77,6 +93,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	// System Stuff
 	{"bak", "\ue615 "},
 	{"bashrc", "\ue615 "},
+	{"bash", "\ue615 "},
 	{"bin", "\uf114 "},
 	{"cfg", "\ue615 "},
 	{"conf", "\ue615 "},
@@ -126,6 +143,10 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"tar", "\uf1c6 "},
 	{"z", "\uf1c6 "},
 	{"zip", "\uf1c6 "},
+	// Comics
+	{"Comics", "\uf02d "},
+	{"cbr", "\ufc98 "},
+	{"cbz", "\ufc98 "},
 	// Git
 	{"FETCH_HEAD", "\ue708 "},
 	{"HEAD", "\ue708 "},
