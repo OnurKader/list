@@ -1,12 +1,12 @@
 #include <unordered_map>
 
-// TODO - ADD:script, scripts, font, fonts, info, WINE
+// TODO - ADD:script, scripts, font, fonts, info, WINE, Peki, csv
 
 const static std::unordered_map<std::string, std::string> icons = {
 	// Programming
-	{"Android", "\ue70e"},
-	{"android", "\ue70e"},
-	{"atom", "\ue764"},
+	{"Android", "\ue70e "},
+	{"android", "\ue70e "},
+	{"atom", "\ue764 "},
 	{"C", "\ue61e "},
 	{"C#", "\uf81a "},
 	{"C++", "\ue61d "},
@@ -49,6 +49,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"yaml", "\ue73e "},
 	{"yml", "\ue73e "},
 	{"vscode", "\ufb0f "},
+	{"wine", "🍷"},
 	// Vim
 	{"nvim", "\ue62b "},
 	{"vi", "\ue62b "},
