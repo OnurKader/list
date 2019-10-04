@@ -64,7 +64,8 @@ const static std::string RESET = "\033[m", BLACK = "\033[38;2;0;0;0m",
 						 ORANGE = "\033[38;2;255;127;8m";
 
 // Human Readable File Sizes
-std::string humane(const uint64_t &size)
+std::string
+humane(const uint64_t &size)
 {
 	char buff[16U];
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
@@ -80,7 +81,8 @@ std::string humane(const uint64_t &size)
 	return std::string(buff);
 }
 
-const std::string to_lower(const std::string &str)
+const std::string
+to_lower(const std::string &str)
 {
 	std::string temp = "";
 	for(const unsigned char &letter: str)
@@ -163,8 +165,7 @@ struct File
 	{
 		/*[](const File &a, const File &b) { return (to_lower(a.name) <
 		 * to_lower(b.name)); } */
-		if(!this->isDir && file.isDir)
-			return false;
+		if(!this->isDir && file.isDir) return false;
 		else if(this->isDir && !file.isDir)
 			return true;
 		return (to_lower(this->short_name) < to_lower(file.short_name));
@@ -207,14 +208,16 @@ struct File
 	}
 };
 
-inline unsigned short getWidth()
+inline unsigned short
+getWidth()
 {
 	struct winsize size;
 	ioctl(1, TIOCGWINSZ, &size);
 	return size.ws_col;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	// Parse the arguments
 	std::ios_base::sync_with_stdio(false);
@@ -277,19 +280,16 @@ int main(int argc, char **argv)
 			dir.push_back(*file);
 		else
 		{
-			if(file->short_name.front() == '.')
-				continue;
+			if(file->short_name.front() == '.') continue;
 			else
 				dir.push_back(*file);
 		}
 
 		// Get the longest file/directory in the directory, to be used when
 		// spacing the columns
-		if(file->length() > max_dir_length)
-			max_dir_length = file->length();
+		if(file->length() > max_dir_length) max_dir_length = file->length();
 
-		if(file->_size > largest_size)
-			largest_size = file->_size;
+		if(file->_size > largest_size) largest_size = file->_size;
 
 		delete file;
 	}
@@ -319,10 +319,10 @@ int main(int argc, char **argv)
 	unsigned int total_length = 4U;
 	for(const File &item: dir)
 	{
-		// 7U because of the file icon and the space after it and the occasional
+		// 8U because of the file icon and the space after it and the occasional
 		// '/' My rows & cols counting sucks so I do an extra check for one row
 		// cases
-		total_length += item.length() + 7U;
+		total_length += item.length() + 8U;
 
 		if(total_length >= term_width)
 		{
@@ -356,8 +356,7 @@ int main(int argc, char **argv)
 			// Hours -> 1 Hour
 			std::time_t diff = now - modify;
 			std::string time_color;
-			if(diff > 3 * DAY)
-				time_color = Color(32, 123, 121).str();
+			if(diff > 3 * DAY) time_color = Color(32, 123, 121).str();
 			else if(diff > DAY && diff < 3 * DAY)
 				time_color = Color(72, 144, 240).str();
 			else if(diff < DAY && diff > 6 * HOUR)
@@ -406,44 +405,46 @@ int main(int argc, char **argv)
 	else
 	{
 		/// REGULAR PRINTING
-		// If max_dir_length > term_width
+		// If max_dir_length > term_width, if the longest string doesn't fit
+		// print a file on new lines
 		if(long_filename && rows == 1U)
 			for(const File &item: dir)
 				std::cout << "    " << item.str() << std::endl;
 		// Regular printing for multiple rows
 		else if(rows > 1U)
 		{
-			// If the maximum file length doesn't fit the terminal, print each
-			// file on a new line
-			if(max_dir_length >= term_width)
-				for(const File &item: dir)
-					std::cout << item.str() << std::endl;
-			else
+			for(size_t i = 0U; i < dir.size() - (dir.size() % cols);
+				i += (cols))
 			{
-				for(size_t i = 0U; i < dir.size() - (dir.size() % cols);
-					i += (cols))
-				{
-					std::cout << "    ";
-					for(size_t n = 0U; n < cols; n++)
-						if(i + n != dir.size())
-							std::cout << dir[i + n].str() << std::left
-									  << std::setw(max_dir_length -
-												   dir[i + n].length() + 4U)
-									  << ' ';
-					std::cout << std::endl;
-				}
-				if(dir.size() % cols > 0)
-				{
-					std::cout << "    ";
-					for(size_t i = dir.size() - (dir.size() % cols);
-						i < dir.size();
-						++i)
+				std::cout << "    ";
+				for(size_t n = 0U; n < cols; n++)
+					if(i + n != dir.size())
+						std::cout << dir[i + n].str() << std::left
+								  << std::setw(max_dir_length -
+											   dir[i + n].length() + 4U)
+								  << ' ';
+				std::cout << std::endl;
+			}
+			// TODO Integrate libgit2 (git status for files)
+			// TODO ls -t recursive tree structure, default depth=2
+			// probably. Use Unicode bar (|-_ and shit)
+			// TODO Maybe use multiple vectors, or a double vector for each
+			// column so it looks like colorls, the width of the columns Or
+			// just calculate the total length of each column and keep them
+			// in an array/vector
+			if(dir.size() % cols > 0)
+			{
+				std::cout << "    ";
+				for(size_t i = dir.size() - (dir.size() % cols); i < dir.size();
+					++i)
+					if(i % cols == cols - 1) std::cout << dir[i].str();
+					else
 						std::cout
 							<< dir[i].str() << std::left
 							<< std::setw(max_dir_length - dir[i].length() + 4U)
 							<< ' ';
-					std::cout << std::endl;
-				}
+
+				std::cout << std::endl;
 			}
 		}
 		// Single Row

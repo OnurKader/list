@@ -1,9 +1,9 @@
 #include <unordered_map>
 
-// TODO - ADD:script, scripts, font, fonts, info, WINE, Peki, csv, m4a,
-// pde(Processing)
-
 const static std::unordered_map<std::string, std::string> icons = {
+	// Peki <3
+	{"Peki", "\uf004 "},
+	{"peki", "\uf004 "},
 	// Programming
 	{"Android", "\ue70e "},
 	{"android", "\ue70e "},
@@ -43,8 +43,11 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"py", "\ue235 "},
 	{"pyc", "\ue73c "},
 	{"python", "\ue235 "},
+	{"pde", "\uf288 "},
 	{"sh", "\uf977"},
 	{"src", "\uf121 "},
+	{"script", "\uf977"},
+	{"scripts", "\uf977"},
 	{"ts", "\ue628 "},
 	{"tags", "\uf02b "},
 	{"yaml", "\ue73e "},
@@ -62,6 +65,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"mid", "\uf886 "},
 	{"midi", "\uf886 "},
 	{"mp3", "\ufc58 "},
+	{"m4a", "\ufc58 "},
 	{"mpa", "\ufc58 "},
 	{"Music", "\ufc58 "},
 	{"ogg", "\uf886 "},
@@ -82,10 +86,10 @@ const static std::unordered_map<std::string, std::string> icons = {
 	// Image
 	{"bmp", "\uf7e8 "},
 	{"gif", "\uf952 "},
-	{"jpg", "\uf03e "},
-	{"jpeg", "\uf03e "},
-	{"png", "\uf03e "},
-	{"Pictures", "\uf03e "},
+	{"jpg", "\uf1c5 "},
+	{"jpeg", "\uf1c5 "},
+	{"png", "\uf1c5 "},
+	{"Pictures", "\uf1c5 "},
 	{"ps", "\uf7ea "},
 	{"psd", "\ue7b8 "},
 	{"svg", "\ufc1f "},
@@ -101,7 +105,12 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"conf", "\ue615 "},
 	{"config", "\ue615 "},
 	{"dll", "\uf830 "},
+	{"firefox", "\ue745 "},
 	{"exe", "\ufab2"},
+	{"font", "\uf031 "},
+	{"fonts", "\uf031 "},
+	{"inf", "\uf7fc "},
+	{"info", "\uf7fc "},
 	{"ico", "\uf6f2 "},
 	{"icon", "\uf6f2 "},
 	{"icons", "\uf6f2 "},
@@ -116,6 +125,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"zsh_history", "\uf7d9 "},
 	{"zshrc", "\ue615 "},
 	// Office Stuff
+	{"csv", "\uf717 "},
 	{"doc", "\uf72c "},
 	{"docx", "\uf72c "},
 	{"latex", "\ue612 "},
