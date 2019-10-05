@@ -1,27 +1,38 @@
-### A Colorful Version of **UNIX Like** systems' *[ls](https://git.savannah.gnu.org/cgit/coreutils.git/tree/src/ls.c)* command, inspired by *[colorls](https://github.com/athityakumar/colorls)* using *[NerdFonts](https://nerdfonts.com/)*
+## A Colorful Version of **UNIX Like** systems' *[ls](https://git.savannah.gnu.org/cgit/coreutils.git/tree/src/ls.c)* command, inspired by *[colorls](https://github.com/athityakumar/colorls)* using *[NerdFonts](https://nerdfonts.com/)*
 
 ___
 
-##### Requierements
-1. _**gcc --version >= 8.0**_
-2. **C++17**
-3. **Linux**
+## Requierements
+1. _**gcc --version >= 8.0 or another compiler that supports C++17**_
+2. **Linux**
+3. **Terminal with 256-Color Support**
+4. **Nerd Fonts**
 
 ___
 
-##### Installation
-**TODO**
+## Installation
+### TODO
 - [x] Fix the one row bug
-- [x] Fix the case when list -a a doesnt return 'Directory Not Found', but list a -a does...
-- [x] Fix Floating Point Exception when `term_width < file_width`
-- [x] Add A Makefile
 - [x] Put the long list of icons in another file
-- [ ] Add Usage (Flags)
+- [x] Add usage (Flags)
+- [ ] Add more screenshots
+- [ ] Add proper symlink support
+- [ ] Change the File class to use `std::filesystem` classes
 
-**Run `make` in the _'list'_ directory**
- (Doesn't write to root, so we don't need root privileges)
+### Build Only
+**Run `make` in the _`src`_ directory**
 
-##### Screenshots
+**_This will create a directory called `bin` with the binary in it without installing it_**
+(Doesn't write to root, so we don't need root privileges)
+
+___
+### Install To /usr/bin/
+**Run `sudo make list install` in the `src` directory, if you want to change the installation location edit the `Makefile`**
+
+**_To change or add icons modify `icons.cpp` and recompile_**
+ *(Note that some icons need a space after them)*
+
+## Screenshots
 ![My Home Directory](https://github.com/OnurKader/list/blob/master/imgs/Screenshot%20from%202019-07-15%2016-26-43.png  "Home")
 ___
 ![Single Row](https://github.com/OnurKader/list/blob/master/imgs/Screenshot%20from%202019-07-15%2016-25-40.png  "One Row Printing")

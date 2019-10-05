@@ -1,5 +1,7 @@
 #include <unordered_map>
 
+// TODO add Downloads maybe an arrow?
+
 const static std::unordered_map<std::string, std::string> icons = {
 	// Peki <3
 	{"Peki", "\uf004 "},
