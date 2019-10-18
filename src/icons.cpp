@@ -1,6 +1,7 @@
 #include <unordered_map>
 
 // TODO add Downloads maybe an arrow?
+// xml,
 
 const static std::unordered_map<std::string, std::string> icons = {
 	// Peki <3

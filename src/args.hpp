@@ -79,7 +79,7 @@ void Args::parseOpt(const std::string &option)
 			delete temp;
 		}
 	else
-		options.insert(std::make_pair(option, *(new Option(option))));
+		options.insert(std::make_pair(option, (Option(option))));
 }
 
 std::unordered_map<std::string, Option> Args::getOpts() const { return options; }

@@ -64,7 +64,8 @@ std::string humane(const uint64_t &size)
 	if(kilo)
 		sprintf(buff,
 				"%lu%c",
-				giga ? size / 1000000000U : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
+				giga ? size / 1000000000U
+					 : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
 				giga ? 'G' : mega ? 'M' : kilo ? 'K' : 'B');
 	else
 		sprintf(buff, "%luB", size);
@@ -109,8 +110,9 @@ class File
 	{
 		std::string temp = "";
 		if(this->isDir)
-			temp += Color(20, 162, 254).str() + (this->icon == "\uf15b " ? "\ue5fe " : this->icon) +
-					this->short_name + '/' + RESET;
+			temp += Color(20, 162, 254).str() +
+					(this->icon == "\uf15b " ? "\ue5fe " : this->icon) + this->short_name +
+					'/' + RESET;
 		else
 			temp += GREEN + this->icon + this->short_name + RESET + ' ';
 
@@ -159,37 +161,47 @@ class File
 		namespace fs = std::filesystem;
 		std::stringstream permissions;
 		fs::perms p(std::filesystem::status(this->name).permissions());
-		permissions
-			<< ((p & fs::perms::owner_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r")
-															   : (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::owner_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w")
-																: (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::owner_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x")
-															   : (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::group_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r")
-															   : (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::group_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w")
-																: (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::group_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x")
-															   : (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::others_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r")
-																: (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::others_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w")
-																 : (Color(88, 40, 128).str() + "-"))
-			<< ((p & fs::perms::others_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x")
-																: (Color(88, 40, 128).str() + "-"))
-			<< RESET << ' ';
+		permissions << ((p & fs::perms::owner_read) != fs::perms::none
+							? (Color(230, 220, 59).str() + "r")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::owner_write) != fs::perms::none
+							? (Color(42, 228, 52).str() + "w")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::owner_exec) != fs::perms::none
+							? (Color(224, 58, 32).str() + "x")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::group_read) != fs::perms::none
+							? (Color(230, 220, 59).str() + "r")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::group_write) != fs::perms::none
+							? (Color(42, 228, 52).str() + "w")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::group_exec) != fs::perms::none
+							? (Color(224, 58, 32).str() + "x")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::others_read) != fs::perms::none
+							? (Color(230, 220, 59).str() + "r")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::others_write) != fs::perms::none
+							? (Color(42, 228, 52).str() + "w")
+							: (Color(88, 40, 128).str() + "-"))
+					<< ((p & fs::perms::others_exec) != fs::perms::none
+							? (Color(224, 58, 32).str() + "x")
+							: (Color(88, 40, 128).str() + "-"))
+					<< RESET << ' ';
 		return permissions.str();
 	}
 };
 
 void usage()
 {
-	std::cout << "\tUsage: `list [OPTIONS] [FILE]` the order doesn't matter\n"
-				 "\n\t-a, --all\t\tShow files which start with . (dotfiles)\n"
-				 "\t-h, --human\t\tPrint file sizes in a human readable format (1024B = 1KB)\n"
-				 "\t-l, --list\t\tUse a long listing format, size, owners, modification time\n"
-				 "\t--help, --usage\t\tPrint this help screen\n";
+	std::cout
+		<< "\tUsage: `list [OPTIONS] [FILE]` the order doesn't matter\n"
+		   "\n\t-a, --all\t\t\tShow files which start with . (dotfiles), ignores '.' and "
+		   "'..'\n"
+		   "\t-h, --human\t\t\tPrint file sizes in a human readable format (1024B = 1KB)\n"
+		   "\t-l, --long\t\t\tUse a long listing format, size, owners, modification time\n"
+		   "\t--help, --usage,\n\t--version, -v, -H\tPrint this help screen\n";
 	exit(1);
 }
 
@@ -207,13 +219,14 @@ int main(int argc, char **argv)
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
 
-	if(arg_parser.optExists("--help", "--usage"))
+	if(arg_parser.optExists("--help", "--usage") || arg_parser.optExists("-H", "-v") ||
+	   arg_parser.optExists("--version"))
 		usage();
 
 	std::vector<File> dir;
 	dir.reserve(16U);
 	const bool show_all = arg_parser.optExists("-a", "--all"),
-			   long_list = arg_parser.optExists("-l", "--list"),
+			   long_list = arg_parser.optExists("-l", "--long"),
 			   human_readable = arg_parser.optExists("-h", "--human");
 
 	std::string directory(".");
@@ -252,7 +265,8 @@ int main(int argc, char **argv)
 		File *file;
 		const std::string &path = entry.path();
 
-		if(entry.is_symlink() && std::filesystem::is_directory(std::filesystem::read_symlink(entry)))
+		if(entry.is_symlink() &&
+		   std::filesystem::is_directory(std::filesystem::read_symlink(entry)))
 			file = new File(path, path.rfind('/') + 1U, entry.is_directory(), 4096UL);
 		else
 			file = new File(path,
@@ -287,7 +301,8 @@ int main(int argc, char **argv)
 	// Empty Directory
 	if(dir.size() == 0U)
 	{
-		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here...\n" << RESET;
+		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here...\n"
+				  << RESET;
 		return 0;
 	}
 
@@ -384,17 +399,18 @@ int main(int argc, char **argv)
 					  << (gr == 0 ? (RED + "ERROR " + RESET)
 								  : (Color(205, 196, 101).str() + group + RESET + ' '))
 					  << std::right
-					  << std::setw((human_readable ? 4 : std::to_string(largest_size).length()) -
-								   size.length() + 1)
-					  << ' ' << size_color << size << RESET << "  " << time_color << m_time << RESET
-					  << "   " << item.str() << std::endl;
+					  << std::setw(
+							 (human_readable ? 4 : std::to_string(largest_size).length()) -
+							 size.length() + 1)
+					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
+					  << RESET << "   " << item.str() << std::endl;
 		}
 	}
 	else
 	{
 		/// REGULAR PRINTING
-		// If max_dir_length > term_width, if the longest string doesn't fit print a file on new
-		// lines
+		// If max_dir_length > term_width, if the longest string doesn't fit print a file on
+		// new lines
 		if(long_filename && rows == 1U)
 			for(const File &item: dir)
 				std::cout << "    " << item.str() << std::endl;
@@ -407,15 +423,17 @@ int main(int argc, char **argv)
 				for(size_t n = 0U; n < cols; n++)
 					if(i + n != dir.size())
 						std::cout << dir[i + n].str() << std::left
-								  << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
+								  << std::setw(max_dir_length - dir[i + n].length() + 4U)
+								  << ' ';
 				std::cout << std::endl;
 			}
 			// TODO Integrate libgit2 (git status for files)
-			// TODO ls -t recursive tree structure, default depth=2 probably. Use Unicode bar (|-_
-			// and shit)
-			// TODO Maybe use multiple vectors, or a double vector for each column so it looks like
-			// colorls, the width of the columns Or just calculate the total length of each column
-			// and keep them in an array/vector
+			// TODO ls -t recursive tree structure, default depth=2 probably. Use Unicode
+			// bar (|-_ and shit)
+			// TODO Maybe use multiple vectors, or a double vector for each column so it
+			// looks like colorls, the width of the columns Or just calculate the total
+			// length of each column and keep them in an array/vector
+			// FIXME The if check for last column has probably slowed it down a lot
 			if(dir.size() % cols > 0)
 			{
 				std::cout << "    ";
@@ -424,7 +442,8 @@ int main(int argc, char **argv)
 						std::cout << dir[i].str();
 					else
 						std::cout << dir[i].str() << std::left
-								  << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
+								  << std::setw(max_dir_length - dir[i].length() + 4U)
+								  << ' ';
 
 				std::cout << std::endl;
 			}
