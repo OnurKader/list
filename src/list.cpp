@@ -51,8 +51,8 @@ class Color
 const static std::string RESET = "\033[m", BLACK = "\033[38;2;0;0;0m",
 						 WHITE = "\033[38;2;255;255;255m", RED = "\033[38;2;255;0;0m",
 						 GREEN = "\033[38;2;0;255;0m", BLUE = "\033[38;2;0;0;255m",
-						 YELLOW = "\033[38;2;255;255;0m", MAGENTA = "\033[38;2;255;0;255m",
-						 CYAN = "\033[38;0;2;255;255m", PURPLE = "\033[38;2;127;32;183m",
+						 YELLOW = "\033[38;3;255;255;0m", MAGENTA = "\033[38;2;255;0;255m",
+						 CYAN = "\033[38;2;3;255;255m", PURPLE = "\033[38;2;127;32;183m",
 						 LIME = "\033[38;2;111;255;8m", BROWN = "\033[38;2;142;69;23m",
 						 ORANGE = "\033[38;2;255;127;8m";
 
@@ -146,9 +146,6 @@ class File
 
 	bool operator<(const File &file) const
 	{
-		/*[](const File &a, const File &b) {
-		 * return (to_lower(a.name) <
-		 * to_lower(b.name)); } */
 		if(!this->isDir && file.isDir)
 			return false;
 		else if(this->isDir && !file.isDir)
@@ -385,7 +382,7 @@ int main(int argc, char **argv)
 			else if(item._size < 512000000ULL)	  // item < 512MB
 				size_color = Color(253, 254, 42).str();
 			else if(item._size < 1000000000ULL)	   // item < 1GB
-				size_color = Color(80, 255, 228).str();
+				size_color = Color(222, 132, 88).str();
 			else
 				size_color = CYAN;
 
