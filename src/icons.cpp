@@ -1,7 +1,7 @@
 #include <unordered_map>
 
 // TODO add Downloads maybe an arrow?
-// xml,
+// xml, ttf
 
 const static std::unordered_map<std::string, std::string> icons = {
 	// Peki <3
@@ -10,6 +10,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	// Programming
 	{"Android", "\ue70e "},
 	{"android", "\ue70e "},
+	{"Atom", "\ue764 "},
 	{"atom", "\ue764 "},
 	{"C", "\ue61e "},
 	{"C#", "\uf81a "},

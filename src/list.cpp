@@ -307,7 +307,6 @@ int main(int argc, char **argv)
 	// .dotfolders first, 'CAPITAL' and 'lower'
 	// mixed Dirs before Files
 	std::sort(dir.begin(), dir.end());
-
 	// Find the number of columns and rows to
 	// display in the Terminal
 	const unsigned short term_width = getWidth();
@@ -400,7 +399,7 @@ int main(int argc, char **argv)
 							 (human_readable ? 4 : std::to_string(largest_size).length()) -
 							 size.length() + 1)
 					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
-					  << RESET << "   " << item.str() << std::endl;
+					  << RESET << "  " << item.str() << std::endl;
 		}
 	}
 	else
