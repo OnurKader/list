@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -O3 -std=c++17 -lstdc++fs -Wall -Wextra -pedantic -pedantic-errors
+CFLAGS= -O3 -std=c++17 -lstdc++fs -Wall -Wextra -pedantic -pedantic-errors -g
 
 all: list
 list:

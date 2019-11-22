@@ -212,7 +212,7 @@ inline unsigned short getWidth()
 int main(int argc, char **argv)
 {
 	// Parse the arguments
-	std::ios_base::sync_with_stdio(false);
+	/* std::ios_base::sync_with_stdio(false); */
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
 
