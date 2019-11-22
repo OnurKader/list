@@ -212,6 +212,7 @@ inline unsigned short getWidth()
 int main(int argc, char **argv)
 {
 	// Parse the arguments
+	// Was causing valgrind to complain about memory :C
 	/* std::ios_base::sync_with_stdio(false); */
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
