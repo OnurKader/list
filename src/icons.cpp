@@ -176,5 +176,6 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"Minecraft", "\uf872 "},
 	{"Team Fortress 2", "\uf1b7 "},
 	{"minecraft", "\uf872 "},
-	{"steam", "\uf9d2"}};
+	{"steam", "\uf9d2"},
+};
 

@@ -7,6 +7,7 @@
 #include "icons.cpp"
 
 #include <algorithm>
+#include <cstring>
 #include <ctime>
 #include <filesystem>
 #include <grp.h>
@@ -82,6 +83,13 @@ const std::string to_lower(const std::string &str)
 	return temp;
 }
 
+bool is_digit(const std::string &str)
+{
+	return (std::find_if(str.begin(), str.end(), [](const char &c) {
+				return !std::isdigit(c);
+			}) == str.end());
+}
+
 class File
 {
 	public:
@@ -127,6 +135,14 @@ class File
 			return this->short_name;
 	}
 
+	std::string inline getFilename() const
+	{
+		if(this->short_name.find('.') != std::string::npos)
+			return this->short_name.substr(0, this->short_name.rfind('.'));
+		else
+			return this->short_name;
+	}
+
 	void findIcon()
 	{
 		const std::string &extension = this->getExtension();
@@ -150,6 +166,10 @@ class File
 			return false;
 		else if(this->isDir && !file.isDir)
 			return true;
+		if(is_digit(this->getFilename()) && is_digit(file.getFilename()))
+		{
+			return strverscmp(this->short_name.c_str(), file.short_name.c_str()) < 0;
+		}
 		return (to_lower(this->short_name) < to_lower(file.short_name));
 	}
 
