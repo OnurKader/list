@@ -166,10 +166,9 @@ class File
 			return false;
 		else if(this->isDir && !file.isDir)
 			return true;
-		if(is_digit(this->getFilename()) && is_digit(file.getFilename()))
-		{
+		else if(is_digit(this->getFilename()) && is_digit(file.getFilename()))
 			return strverscmp(this->short_name.c_str(), file.short_name.c_str()) < 0;
-		}
+
 		return (to_lower(this->short_name) < to_lower(file.short_name));
 	}
 
