@@ -1,7 +1,6 @@
 #include <unordered_map>
 
 // TODO add Downloads maybe an arrow?
-// xml, ttf
 
 const static std::unordered_map<std::string, std::string> icons = {
 	// Peki <3
@@ -125,6 +124,8 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"sys", "\ue712 "},
 	{"temp", "\uf651 "},
 	{"tmp", "\uf651 "},
+	{"ttf", "\uf031 "},
+	{"xml", "\uf72d "},
 	{"zsh", "\ue615 "},
 	{"zsh_history", "\uf7d9 "},
 	{"zshrc", "\ue615 "},
