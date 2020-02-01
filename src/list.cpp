@@ -43,9 +43,15 @@ class Color
 		return std::string(buffer);
 	}
 
-	Color() : r(0), g(0), b(0) {}
-	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
-	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+	Color() : r(0), g(0), b(0)
+	{
+	}
+	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs)
+	{
+	}
+	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b)
+	{
+	}
 };
 
 // COMMON COLORS
@@ -102,7 +108,9 @@ class File
 	{
 		this->findIcon();
 	}
-	File(const std::string &file) : name(file) {}
+	File(const std::string &file) : name(file)
+	{
+	}
 
 	friend std::ostream &operator<<(std::ostream &os, const File &file)
 	{
@@ -150,7 +158,10 @@ class File
 			this->icon = icons.at(extension);
 	}
 
-	size_t length() const { return short_name.size(); }
+	size_t length() const
+	{
+		return short_name.size();
+	}
 
 	std::string inline size(const bool &human_readable = false) const
 	{
@@ -231,8 +242,6 @@ inline unsigned short getWidth()
 int main(int argc, char **argv)
 {
 	// Parse the arguments
-	// Was causing valgrind to complain about memory :C
-	/* std::ios_base::sync_with_stdio(false); */
 	Args arg_parser(argc, argv);
 	arg_parser.convert();
 
@@ -244,7 +253,8 @@ int main(int argc, char **argv)
 	dir.reserve(16U);
 	const bool show_all = arg_parser.optExists("-a", "--all"),
 			   long_list = arg_parser.optExists("-l", "--long"),
-			   human_readable = arg_parser.optExists("-h", "--human");
+			   human_readable = arg_parser.optExists("-h", "--human"),
+			   one_line = arg_parser.optExists("-1", "--one-line");
 
 	std::string directory(".");
 	for(const auto &item: arg_parser.getOpts())
@@ -262,6 +272,8 @@ int main(int argc, char **argv)
 				  << "Directory Not Found. " << RESET << std::endl;
 		return 3;
 	}
+	// TODO Check if -l has been passed, and move those printings to functions. One for
+	// regular printing, one for long listing
 	else if(std::filesystem::is_regular_file(std::filesystem::path(directory)))
 	{
 		std::filesystem::directory_entry entry(directory);
@@ -269,7 +281,74 @@ int main(int argc, char **argv)
 				  directory.rfind('/') + 1U,
 				  entry.is_directory(),
 				  entry.is_regular_file() ? entry.file_size() : 0UL);
-		std::cout << "    " << temp.str() << std::endl;
+		if(long_list)
+		{
+			const std::string &size = temp.size(human_readable);
+
+			struct stat info;
+			stat(temp.name.c_str(), &info);
+			struct passwd *pw = getpwuid(info.st_uid);
+			struct group *gr = getgrgid(info.st_gid);
+			std::string uname(pw->pw_name);				 // Owner-User
+			std::string group(gr->gr_name);				 // Owner-Group
+			std::time_t modify = info.st_mtim.tv_sec;	 // Last Modified
+														 // Time
+			std::time_t now = std::time(NULL);
+			std::string m_time(ctime(&modify));	   // Convert time_t
+												   // into a prettier
+												   // string equivelant
+			m_time.erase(m_time.end() - 1);		   // Get rid of the last '\n'
+
+			// FIXME fix the blue colors, too
+			// similar
+
+			// Set the color of the Modification
+			// Time, 3 Days -> 1 Day -> 6 Hours ->
+			// 1 Hour
+			std::time_t diff = now - modify;
+			std::string time_color;
+			if(diff > 3 * DAY)
+				time_color = Color(32, 123, 121).str();
+			else if(diff > DAY && diff < 3 * DAY)
+				time_color = Color(72, 144, 240).str();
+			else if(diff < DAY && diff > 6 * HOUR)
+				time_color = Color(108, 222, 171).str();
+			else if(diff < 6 * HOUR && diff > HOUR)
+				time_color = Color(146, 240, 190).str();
+			else
+				time_color = Color(20, 255, 40).str();
+
+			// Size Colors
+			std::string size_color;
+			if(temp._size < 1000000ULL)	   // temp < 1 MB
+				size_color = WHITE;
+			else if(temp._size < 128000000ULL)	  // temp < 128MB
+				size_color = Color(113, 220, 208).str();
+			else if(temp._size < 512000000ULL)	  // temp < 512MB
+				size_color = Color(253, 254, 42).str();
+			else if(temp._size < 1000000000ULL)	   // temp < 1GB
+				size_color = Color(222, 132, 88).str();
+			else
+				size_color = CYAN;
+
+			std::cout << "    " << temp.getPerms() << std::right
+					  << std::setw(std::string(getpwuid(geteuid())->pw_name).length() -
+								   uname.length() + 1)
+					  << ' ' << (pw == 0 ? (RED + "ERROR " + RESET) : (uname + RESET + ' '))
+					  << std::setw(std::string(getgrgid(geteuid())->gr_name).length() -
+								   group.length() + 1)
+					  << ' '
+					  << (gr == 0 ? (RED + "ERROR " + RESET)
+								  : (Color(205, 196, 101).str() + group + RESET))
+					  << std::right
+					  << std::setw(
+							 (human_readable ? 4 : std::to_string(temp._size).length()) -
+							 size.length() + 1)
+					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
+					  << RESET << "  " << temp.str() << std::endl;
+		}
+		else
+			std::cout << "    " << temp.str() << std::endl;
 		return 0;
 	}
 
@@ -413,7 +492,7 @@ int main(int argc, char **argv)
 								   group.length() + 1)
 					  << ' '
 					  << (gr == 0 ? (RED + "ERROR " + RESET)
-								  : (Color(205, 196, 101).str() + group + RESET + ' '))
+								  : (Color(205, 196, 101).str() + group + RESET))
 					  << std::right
 					  << std::setw(
 							 (human_readable ? 4 : std::to_string(largest_size).length()) -
@@ -427,7 +506,8 @@ int main(int argc, char **argv)
 		/// REGULAR PRINTING
 		// If max_dir_length > term_width, if the longest string doesn't fit print a file on
 		// new lines
-		if(long_filename && rows == 1U)
+		// TODO Seperate long -l from this
+		if((long_filename && rows == 1U) || one_line)
 			for(const File &item: dir)
 				std::cout << "    " << item.str() << std::endl;
 		// Regular printing for multiple rows

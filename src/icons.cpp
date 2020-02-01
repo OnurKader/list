@@ -36,6 +36,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"java", "\ue256 "},
 	{"js", "\ue74e "},
 	{"json", "\ue60b "},
+	{"LICENSE", "\ufae5"},
 	{"Makefile", "\ue615 "},
 	{"makefile", "\ue615 "},
 	{"make", "\ue615 "},
@@ -56,7 +57,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"yaml", "\ue73e "},
 	{"yml", "\ue73e "},
 	{"vscode", "\ufb0f "},
-	{"wine", "🍷"},
+	{"wine", "\uf7a7 "},
 	// Vim
 	{"nvim", "\ue62b "},
 	{"vi", "\ue62b "},
