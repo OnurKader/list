@@ -89,7 +89,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"wmv", "\uf880 "},
 	// Image
 	{"bmp", "\uf7e8 "},
-	{"gif", "\uf952 "},
+	{"gif", "\uf952"},
 	{"jpg", "\uf1c5 "},
 	{"jpeg", "\uf1c5 "},
 	{"png", "\uf1c5 "},
@@ -143,7 +143,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"pps", "\uf1c4 "},
 	{"ppt", "\uf1c4 "},
 	{"pptx", "\uf1c4 "},
-	{"rtf", "\uf15c"},
+	{"rtf", "\uf15c "},
 	{"tex", "\ue612 "},
 	{"txt", "\uf0f6 "},
 	{"xls", "\uf1c3 "},
@@ -155,6 +155,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"bzip2", "\uf066 "},
 	{"deb", "\uf306 "},
 	{"gz", "\uf1c6 "},
+	{"xz", "\uf1c6 "},
 	{"pkg", "\uf487 "},
 	{"rar", "\ufac3"},
 	{"rpm", "\uf316 "},
@@ -172,6 +173,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"branches", "\ue725 "},
 	{"git", "\ue5fb "},
 	{"gitconfig", "\uf1d3 "},
+	{"gitmodules", "\uf1d3 "},
 	{"gitignore", "\uf1d3 "},
 	{"hooks", "\ufbe0 "},
 	// Games
