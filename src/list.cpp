@@ -178,6 +178,7 @@ class File
 		else if(this->isDir && !file.isDir)
 			return true;
 		else if(is_digit(this->getFilename()) && is_digit(file.getFilename()))
+			// Breaks Mac compatibility (UNIX)
 			return strverscmp(this->short_name.c_str(), file.short_name.c_str()) < 0;
 
 		return (to_lower(this->short_name) < to_lower(file.short_name));
@@ -235,7 +236,7 @@ void usage()
 inline unsigned short getWidth()
 {
 	struct winsize size;
-	ioctl(1, TIOCGWINSZ, &size);
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	return size.ws_col;
 }
 
