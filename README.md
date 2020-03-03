@@ -38,3 +38,7 @@ ___
 ![Single Row](https://github.com/OnurKader/list/blob/master/imgs/Screenshot%20from%202019-07-15%2016-25-40.png  "One Row Printing")
 ___
 ![Multi Rows Single Column](https://github.com/OnurKader/list/blob/master/imgs/Screenshot%20from%202019-07-15%2016-25-08.png  "Multiple Rows")
+___
+![New Home Listing](https://raw.githubusercontent.com/OnurKader/list/refactor/imgs/2020-03-03%2014-36-57.png)
+___
+![Long Listing](https://raw.githubusercontent.com/OnurKader/list/refactor/imgs/2020-03-03%2014-37-26.png)
