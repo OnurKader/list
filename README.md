@@ -1,8 +1,10 @@
-## A Colorful Version of **UNIX Like** systems' *[ls](https://git.savannah.gnu.org/cgit/coreutils.git/tree/src/ls.c)* command, inspired by *[colorls](https://github.com/athityakumar/colorls)* using *[NerdFonts](https://nerdfonts.com/)*
+# A Colorful Version of **UNIX Like** systems'
+*[ls](https://git.savannah.gnu.org/cgit/coreutils.git/tree/src/ls.c)* command, inspired by *[colorls](https://github.com/athityakumar/colorls)* using *[NerdFonts](https://nerdfonts.com/)*
 
 ___
 
 ## Requierements
+
 1. _**gcc --version >= 8.0 or another compiler that supports C++17**_
 2. **Linux**
 3. **Terminal with 256-Color Support**
@@ -11,11 +13,13 @@ ___
 ___
 
 ## Installation
+
 ### TODO
+
 - [x] Fix the one row bug
 - [x] Put the long list of icons in another file
 - [x] Add usage (Flags)
-- [ ] Add more screenshots
+- [x] Add more screenshots
 - [ ] Add proper symlink support
 - [ ] Change the File class to use `std::filesystem` classes
 
