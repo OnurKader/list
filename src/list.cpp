@@ -485,7 +485,7 @@ int main(int argc, char **argv)
 			else
 				size_color = CYAN;
 
-			std::cout << "    " << item.getPerms() << std::right
+			std::cout << "  " << item.getPerms() << std::right
 					  << std::setw(std::string(getpwuid(geteuid())->pw_name).length() -
 								   uname.length() + 1)
 					  << ' ' << (pw == 0 ? (RED + "ERROR " + RESET) : (uname + RESET + ' '))
