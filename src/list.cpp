@@ -184,7 +184,7 @@ class File
 		return (to_lower(this->short_name) < to_lower(file.short_name));
 	}
 
-	std::string getPerms() const
+	std::pair<std::string, bool> getPerms() const
 	{
 		namespace fs = std::filesystem;
 		std::stringstream permissions;
@@ -217,7 +217,7 @@ class File
 							? (Color(224, 58, 32).str() + "x")
 							: (Color(88, 40, 128).str() + "-"))
 					<< RESET << ' ';
-		return permissions.str();
+		return std::make_pair(permissions.str(), (p & fs::perms::owner_exec) != fs::perms::none);
 	}
 };
 
@@ -270,7 +270,7 @@ int main(int argc, char **argv)
 	if(!std::filesystem::exists(std::filesystem::path(directory)))
 	{
 		std::cout << "    \033[1;31m"
-				  << "Directory Not Found. " << RESET << std::endl;
+				  << "Directory Not Found. " << RESET << '\n';
 		return 3;
 	}
 	// TODO Check if -l has been passed, and move those printings to functions. One for
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
 			else
 				size_color = CYAN;
 
-			std::cout << "    " << temp.getPerms() << std::right
+			std::cout << "    " << temp.getPerms().first << std::right
 					  << std::setw(std::string(getpwuid(geteuid())->pw_name).length() -
 								   uname.length() + 1)
 					  << ' ' << (pw == 0 ? (RED + "ERROR " + RESET) : (uname + RESET + ' '))
@@ -346,10 +346,10 @@ int main(int argc, char **argv)
 							 (human_readable ? 4 : std::to_string(temp._size).length()) -
 							 size.length() + 1)
 					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
-					  << RESET << "  " << temp.str() << std::endl;
+					  << RESET << "  " << temp.str() << '\n';
 		}
 		else
-			std::cout << "    " << temp.str() << std::endl;
+			std::cout << "    " << temp.str() << '\n';
 		return 0;
 	}
 
@@ -485,7 +485,7 @@ int main(int argc, char **argv)
 			else
 				size_color = CYAN;
 
-			std::cout << "  " << item.getPerms() << std::right
+			std::cout << "  " << item.getPerms().first << std::right
 					  << std::setw(std::string(getpwuid(geteuid())->pw_name).length() -
 								   uname.length() + 1)
 					  << ' ' << (pw == 0 ? (RED + "ERROR " + RESET) : (uname + RESET + ' '))
@@ -499,7 +499,7 @@ int main(int argc, char **argv)
 							 (human_readable ? 4 : std::to_string(largest_size).length()) -
 							 size.length() + 1)
 					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
-					  << RESET << "  " << item.str() << std::endl;
+					  << RESET << "  " << item.str() << '\n';
 		}
 	}
 	else
@@ -510,7 +510,7 @@ int main(int argc, char **argv)
 		// TODO Seperate long -l from this
 		if((long_filename && rows == 1U) || one_line)
 			for(const File &item: dir)
-				std::cout << "    " << item.str() << std::endl;
+				std::cout << "    " << item.str() << '\n';
 		// Regular printing for multiple rows
 		else if(rows > 1U)
 		{
@@ -522,7 +522,7 @@ int main(int argc, char **argv)
 						std::cout << dir[i + n].str() << std::left
 								  << std::setw(max_dir_length - dir[i + n].length() + 4U)
 								  << ' ';
-				std::cout << std::endl;
+				std::cout << '\n';
 			}
 			// TODO Integrate libgit2 (git status for files)
 			// TODO ls -t recursive tree structure, default depth=2 probably. Use Unicode
@@ -542,7 +542,7 @@ int main(int argc, char **argv)
 								  << std::setw(max_dir_length - dir[i].length() + 4U)
 								  << ' ';
 
-				std::cout << std::endl;
+				std::cout << '\n';
 			}
 		}
 		// Single Row
@@ -555,7 +555,7 @@ int main(int argc, char **argv)
 					std::cout << dir[i].str();
 				else
 					std::cout << dir[i].str() << std::left << std::setw(4U) << ' ';
-			std::cout << std::endl;
+			std::cout << '\n';
 		}
 	}
 

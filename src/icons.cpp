@@ -38,6 +38,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"js", "\ue74e "},
 	{"json", "\ue60b "},
 	{"LICENSE", "\ufae5"},
+	{"lua", "\ue620 "},
 	{"Makefile", "\ue615 "},
 	{"makefile", "\ue615 "},
 	{"make", "\ue615 "},
