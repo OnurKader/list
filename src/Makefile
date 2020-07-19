@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -O3 -std=c++2a -lstdc++fs -Wall -Wextra -Wshadow -Wpedantic -flto
+CFLAGS= -O3 -std=c++2a -Wall -Wextra -Wshadow -Wpedantic -flto
 
 all: list
 

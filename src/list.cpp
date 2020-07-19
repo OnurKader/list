@@ -2,6 +2,10 @@
 // different color, greenish for dirs orangish for files. and add an '@' maybe?
 // TODO Follow symlink and show where it goes in ls -l
 
+// FIXME: isatty() check and assume the default width is 80(?)
+
+// FIXME: Unicode characters count as 2 or 4 long but they display as one, fix that
+
 // Includes
 #include "args.hpp"
 #include "icons.cpp"
@@ -24,10 +28,10 @@
 
 class Color
 {
-	private:
+private:
 	const uint8_t r, g, b;
 
-	friend std::ostream &operator<<(std::ostream &os, const Color &color)
+	friend std::ostream& operator<<(std::ostream& os, const Color& color)
 	{
 		char buffer[24];
 		sprintf(buffer, "\033[38;2;%u;%u;%um", color.r, color.g, color.b);
@@ -35,7 +39,7 @@ class Color
 		return os;
 	}
 
-	public:
+public:
 	const std::string str() const
 	{
 		char buffer[24];
@@ -43,15 +47,9 @@ class Color
 		return std::string(buffer);
 	}
 
-	Color() : r(0), g(0), b(0)
-	{
-	}
-	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs)
-	{
-	}
-	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b)
-	{
-	}
+	Color() : r(0), g(0), b(0) {}
+	explicit Color(uint8_t gs) : r(gs), g(gs), b(gs) {}
+	explicit Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 
 // COMMON COLORS
@@ -64,15 +62,14 @@ const static std::string RESET = "\033[m", BLACK = "\033[38;2;0;0;0m",
 						 ORANGE = "\033[38;2;255;127;8m";
 
 // Human Readable File Sizes
-std::string humane(const uint64_t &size)
+std::string humane(const uint64_t& size)
 {
 	char buff[16U];
 	bool giga = size / 1000000000U, mega = size / 1000000U, kilo = size / 1000U;
 	if(kilo)
 		sprintf(buff,
 				"%lu%c",
-				giga ? size / 1000000000U
-					 : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
+				giga ? size / 1000000000U : (mega ? size / 1000000U : (kilo ? size / 1000U : size)),
 				giga ? 'G' : mega ? 'M' : kilo ? 'K' : 'B');
 	else
 		sprintf(buff, "%luB", size);
@@ -80,42 +77,39 @@ std::string humane(const uint64_t &size)
 	return std::string(buff);
 }
 
-const std::string to_lower(const std::string &str)
+const std::string to_lower(const std::string& str)
 {
 	std::string temp = "";
-	for(const unsigned char &letter: str)
+	for(const unsigned char& letter: str)
 		temp += (unsigned char)std::tolower(letter);
 
 	return temp;
 }
 
-bool is_digit(const std::string &str)
+bool is_digit(const std::string& str)
 {
-	return (std::find_if(str.begin(), str.end(), [](const char &c) {
-				return !std::isdigit(c);
-			}) == str.end());
+	return (std::find_if(str.begin(), str.end(), [](const char& c) { return !std::isdigit(c); }) ==
+			str.end());
 }
 
 class File
 {
-	public:
+public:
 	std::string name, short_name, icon;
 	bool isDir;
 	uint64_t _size;
 
-	File(const std::string &file, unsigned long index, bool dir, uint64_t size) :
+	File(const std::string& file, unsigned long index, bool dir, uint64_t size) :
 		name(file), short_name(file.substr(index)), icon("\uf15b "), isDir(dir), _size(size)
 	{
 		this->findIcon();
 	}
-	File(const std::string &file) : name(file)
-	{
-	}
+	File(const std::string& file) : name(file) {}
 
-	friend std::ostream &operator<<(std::ostream &os, const File &file)
+	friend std::ostream& operator<<(std::ostream& os, const File& file)
 	{
 		if(file.isDir)
-			os << Color(21, 162, 252) << (file.icon == "\uf15b " ? "\ue5fe " : file.icon)
+			os << Color(20, 162, 254) << (file.icon == "\uf15b " ? "\ue5fe " : file.icon)
 			   << file.short_name << '/' << RESET;
 		else
 			os << GREEN << file.icon << file.short_name << RESET << ' ';
@@ -126,9 +120,8 @@ class File
 	{
 		std::string temp = "";
 		if(this->isDir)
-			temp += Color(20, 162, 254).str() +
-					(this->icon == "\uf15b " ? "\ue5fe " : this->icon) + this->short_name +
-					'/' + RESET;
+			temp += Color(20, 162, 254).str() + (this->icon == "\uf15b " ? "\ue5fe " : this->icon) +
+					this->short_name + '/' + RESET;
 		else
 			temp += GREEN + this->icon + this->short_name + RESET + ' ';
 
@@ -153,17 +146,14 @@ class File
 
 	void findIcon()
 	{
-		const std::string &extension = this->getExtension();
+		const std::string& extension = this->getExtension();
 		if(icons.find(extension) != icons.end())
 			this->icon = icons.at(extension);
 	}
 
-	size_t length() const
-	{
-		return short_name.size();
-	}
+	size_t length() const { return short_name.size(); }
 
-	std::string inline size(const bool &human_readable = false) const
+	std::string inline size(const bool& human_readable = false) const
 	{
 		if(this->isDir)
 			return (human_readable ? humane(4096) : std::to_string(4096));
@@ -171,7 +161,7 @@ class File
 			return (human_readable ? humane(this->_size) : std::to_string(this->_size));
 	}
 
-	bool operator<(const File &file) const
+	bool operator<(const File& file) const
 	{
 		if(!this->isDir && file.isDir)
 			return false;
@@ -189,47 +179,38 @@ class File
 		namespace fs = std::filesystem;
 		std::stringstream permissions;
 		fs::perms p(std::filesystem::status(this->name).permissions());
-		permissions << ((p & fs::perms::owner_read) != fs::perms::none
-							? (Color(230, 220, 59).str() + "r")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::owner_write) != fs::perms::none
-							? (Color(42, 228, 52).str() + "w")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::owner_exec) != fs::perms::none
-							? (Color(224, 58, 32).str() + "x")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::group_read) != fs::perms::none
-							? (Color(230, 220, 59).str() + "r")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::group_write) != fs::perms::none
-							? (Color(42, 228, 52).str() + "w")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::group_exec) != fs::perms::none
-							? (Color(224, 58, 32).str() + "x")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::others_read) != fs::perms::none
-							? (Color(230, 220, 59).str() + "r")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::others_write) != fs::perms::none
-							? (Color(42, 228, 52).str() + "w")
-							: (Color(88, 40, 128).str() + "-"))
-					<< ((p & fs::perms::others_exec) != fs::perms::none
-							? (Color(224, 58, 32).str() + "x")
-							: (Color(88, 40, 128).str() + "-"))
-					<< RESET << ' ';
+		permissions
+			<< ((p & fs::perms::owner_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r")
+															   : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::owner_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w")
+																: (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::owner_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x")
+															   : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::group_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r")
+															   : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::group_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w")
+																: (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::group_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x")
+															   : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::others_read) != fs::perms::none ? (Color(230, 220, 59).str() + "r")
+																: (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::others_write) != fs::perms::none ? (Color(42, 228, 52).str() + "w")
+																 : (Color(88, 40, 128).str() + "-"))
+			<< ((p & fs::perms::others_exec) != fs::perms::none ? (Color(224, 58, 32).str() + "x")
+																: (Color(88, 40, 128).str() + "-"))
+			<< RESET << ' ';
 		return std::make_pair(permissions.str(), (p & fs::perms::owner_exec) != fs::perms::none);
 	}
 };
 
 void usage()
 {
-	std::cout
-		<< "\tUsage: `list [OPTIONS] [FILE]` the order doesn't matter\n"
-		   "\n\t-a, --all\t\t\tShow files which start with . (dotfiles), ignores '.' and "
-		   "'..'\n"
-		   "\t-h, --human\t\t\tPrint file sizes in a human readable format (1024B = 1KB)\n"
-		   "\t-l, --long\t\t\tUse a long listing format, size, owners, modification time\n"
-		   "\t--help, --usage,\n\t--version, -v, -H\tPrint this help screen\n";
+	std::cout << "\tUsage: `list [OPTIONS] [FILE]` the order doesn't matter\n"
+				 "\n\t-a, --all\t\t\tShow files which start with . (dotfiles), ignores '.' and "
+				 "'..'\n"
+				 "\t-h, --human\t\t\tPrint file sizes in a human readable format (1024B = 1KB)\n"
+				 "\t-l, --long\t\t\tUse a long listing format, size, owners, modification time\n"
+				 "\t--help, --usage,\n\t--version, -v, -H\tPrint this help screen\n";
 	exit(1);
 }
 
@@ -240,7 +221,7 @@ inline unsigned short getWidth()
 	return size.ws_col;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	// Parse the arguments
 	Args arg_parser(argc, argv);
@@ -258,7 +239,7 @@ int main(int argc, char **argv)
 			   one_line = arg_parser.optExists("-1", "--one-line");
 
 	std::string directory(".");
-	for(const auto &item: arg_parser.getOpts())
+	for(const auto& item: arg_parser.getOpts())
 		if(item.second.mode == Option::str && item.second.name != argv[0U])
 		{
 			directory = item.second.name;
@@ -284,12 +265,12 @@ int main(int argc, char **argv)
 				  entry.is_regular_file() ? entry.file_size() : 0UL);
 		if(long_list)
 		{
-			const std::string &size = temp.size(human_readable);
+			const std::string& size = temp.size(human_readable);
 
 			struct stat info;
 			stat(temp.name.c_str(), &info);
-			struct passwd *pw = getpwuid(info.st_uid);
-			struct group *gr = getgrgid(info.st_gid);
+			struct passwd* pw = getpwuid(info.st_uid);
+			struct group* gr = getgrgid(info.st_gid);
 			std::string uname(pw->pw_name);				 // Owner-User
 			std::string group(gr->gr_name);				 // Owner-Group
 			std::time_t modify = info.st_mtim.tv_sec;	 // Last Modified
@@ -342,11 +323,10 @@ int main(int argc, char **argv)
 					  << (gr == 0 ? (RED + "ERROR " + RESET)
 								  : (Color(205, 196, 101).str() + group + RESET))
 					  << std::right
-					  << std::setw(
-							 (human_readable ? 4 : std::to_string(temp._size).length()) -
-							 size.length() + 1)
-					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
-					  << RESET << "  " << temp.str() << '\n';
+					  << std::setw((human_readable ? 4 : std::to_string(temp._size).length()) -
+								   size.length() + 1)
+					  << ' ' << size_color << size << RESET << "  " << time_color << m_time << RESET
+					  << "  " << temp.str() << '\n';
 		}
 		else
 			std::cout << "    " << temp.str() << '\n';
@@ -357,10 +337,10 @@ int main(int argc, char **argv)
 	uint64_t largest_size = 1ULL;
 	// Push Files into dir Vector, if -a isn't
 	// specified don't put dotfiles in
-	for(const auto &entry: std::filesystem::directory_iterator(directory))
+	for(const auto& entry: std::filesystem::directory_iterator(directory))
 	{
-		File *file;
-		const std::string &path = entry.path();
+		File* file;
+		const std::string& path = entry.path();
 
 		if(entry.is_symlink() &&
 		   std::filesystem::is_directory(std::filesystem::read_symlink(entry)))
@@ -398,8 +378,7 @@ int main(int argc, char **argv)
 	// Empty Directory
 	if(dir.size() == 0U)
 	{
-		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here...\n"
-				  << RESET;
+		std::cout << "    " << Color(229U, 195U, 38U) << "Nothing to show here...\n" << RESET;
 		return 0;
 	}
 
@@ -417,7 +396,7 @@ int main(int argc, char **argv)
 	const bool long_filename = cols == 0U;
 	unsigned short rows = long_filename ? 0U : dir.size() / cols;
 	unsigned int total_length = 4U;
-	for(const File &item: dir)
+	for(const File& item: dir)
 	{
 		// 8U because of the file icon and the
 		// space after it and the occasional
@@ -435,14 +414,14 @@ int main(int argc, char **argv)
 	/// PRINTING
 	if(long_list)	 // -l option
 	{
-		for(const File &item: dir)
+		for(const File& item: dir)
 		{
-			const std::string &size = item.size(human_readable);
+			const std::string& size = item.size(human_readable);
 
 			struct stat info;
 			stat(item.name.c_str(), &info);
-			struct passwd *pw = getpwuid(info.st_uid);
-			struct group *gr = getgrgid(info.st_gid);
+			struct passwd* pw = getpwuid(info.st_uid);
+			struct group* gr = getgrgid(info.st_gid);
 			std::string uname(pw->pw_name);				 // Owner-User
 			std::string group(gr->gr_name);				 // Owner-Group
 			std::time_t modify = info.st_mtim.tv_sec;	 // Last Modified
@@ -495,11 +474,10 @@ int main(int argc, char **argv)
 					  << (gr == 0 ? (RED + "ERROR " + RESET)
 								  : (Color(205, 196, 101).str() + group + RESET))
 					  << std::right
-					  << std::setw(
-							 (human_readable ? 4 : std::to_string(largest_size).length()) -
-							 size.length() + 1)
-					  << ' ' << size_color << size << RESET << "  " << time_color << m_time
-					  << RESET << "  " << item.str() << '\n';
+					  << std::setw((human_readable ? 4 : std::to_string(largest_size).length()) -
+								   size.length() + 1)
+					  << ' ' << size_color << size << RESET << "  " << time_color << m_time << RESET
+					  << "  " << item.str() << '\n';
 		}
 	}
 	else
@@ -509,7 +487,7 @@ int main(int argc, char **argv)
 		// new lines
 		// TODO Seperate long -l from this
 		if((long_filename && rows == 1U) || one_line)
-			for(const File &item: dir)
+			for(const File& item: dir)
 				std::cout << "    " << item.str() << '\n';
 		// Regular printing for multiple rows
 		else if(rows > 1U)
@@ -520,8 +498,7 @@ int main(int argc, char **argv)
 				for(size_t n = 0U; n < cols; n++)
 					if(i + n != dir.size())
 						std::cout << dir[i + n].str() << std::left
-								  << std::setw(max_dir_length - dir[i + n].length() + 4U)
-								  << ' ';
+								  << std::setw(max_dir_length - dir[i + n].length() + 4U) << ' ';
 				std::cout << '\n';
 			}
 			// TODO Integrate libgit2 (git status for files)
@@ -539,8 +516,7 @@ int main(int argc, char **argv)
 						std::cout << dir[i].str();
 					else
 						std::cout << dir[i].str() << std::left
-								  << std::setw(max_dir_length - dir[i].length() + 4U)
-								  << ' ';
+								  << std::setw(max_dir_length - dir[i].length() + 4U) << ' ';
 
 				std::cout << '\n';
 			}
