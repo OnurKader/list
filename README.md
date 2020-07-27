@@ -7,7 +7,7 @@ ___
 
 1. _**gcc --version >= 8.0 or another compiler that supports C++17**_
 2. **Linux**
-3. **Terminal with 256-Color Support**
+3. **Terminal with 24-bit / true-color Support**
 4. **Nerd Fonts**
 
 ___
