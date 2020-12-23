@@ -112,6 +112,7 @@ const static std::unordered_map<std::string, std::string> icons = {
 	{"bashrc", "\ue615 "},
 	{"bash", "\ue615 "},
 	{"bin", "\uf114 "},
+	{"build", "\ue615 "},
 	{"cfg", "\ue615 "},
 	{"conf", "\ue615 "},
 	{"config", "\ue615 "},
