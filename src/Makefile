@@ -5,7 +5,7 @@ all: list
 
 list:
 	mkdir -p ../bin && $(CC) -o ../bin/list list.cpp $(CFLAGS)
-install:
+install: list
 	cp ../bin/list ~/.local/bin/list
 clean:
 	rm ../bin/list
